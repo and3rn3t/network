@@ -1,0 +1,26 @@
+# UniFi Network Monitoring Metrics
+
+# HELP unifi_hosts_total Total number of hosts
+# TYPE unifi_hosts_total gauge
+unifi_hosts_total 0
+
+# HELP unifi_hosts_online Number of online hosts
+# TYPE unifi_hosts_online gauge
+unifi_hosts_online 0
+
+# HELP unifi_hosts_offline Number of offline hosts
+# TYPE unifi_hosts_offline gauge
+unifi_hosts_offline 0
+
+# HELP unifi_host_uptime Host uptime in seconds
+# TYPE unifi_host_uptime gauge
+
+# HELP unifi_host_status Host status (1=online, 0=offline)
+# TYPE unifi_host_status gauge
+
+# HELP unifi_events_24h Events in last 24 hours
+# TYPE unifi_events_24h counter
+unifi_events_24h 0
+
+# HELP unifi_events_by_severity Events by severity (24h)
+# TYPE unifi_events_by_severity counter

@@ -1,0 +1,60 @@
+### UniFi Network Controller API Explorer
+### Use the REST Client extension to test API endpoints directly in VS Code
+### Variables are defined in .vscode/settings.json
+
+@baseUrl = https://localhost:8443
+@site = default
+
+### 1. Login (Get Cookie)
+# @name login
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "username": "your-username",
+  "password": "your-password"
+}
+
+### 2. Get Self Info
+GET {{baseUrl}}/api/self
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 3. List Sites
+GET {{baseUrl}}/api/self/sites
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 4. Get Site Stats
+GET {{baseUrl}}/api/s/{{site}}/stat/sites
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 5. List Devices
+GET {{baseUrl}}/api/s/{{site}}/stat/device
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 6. List Active Clients
+GET {{baseUrl}}/api/s/{{site}}/stat/sta
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 7. List All Users (Including Inactive)
+GET {{baseUrl}}/api/s/{{site}}/rest/user
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 8. Get Alarms
+GET {{baseUrl}}/api/s/{{site}}/list/alarm
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 9. Get Events
+GET {{baseUrl}}/api/s/{{site}}/stat/event
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 10. Get Network Configuration
+GET {{baseUrl}}/api/s/{{site}}/rest/networkconf
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 11. Get WLAN Configuration
+GET {{baseUrl}}/api/s/{{site}}/rest/wlanconf
+Cookie: {{login.response.headers.Set-Cookie}}
+
+### 12. Logout
+POST {{baseUrl}}/api/logout
+Cookie: {{login.response.headers.Set-Cookie}}
