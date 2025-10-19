@@ -23,7 +23,11 @@ const Settings: React.FC = () => {
         </p>
       </div>
 
-      <MaterialCard title="⚙️ Configuration" elevation={1} style={{ marginTop: 24 }}>
+      <MaterialCard
+        title="⚙️ Configuration"
+        elevation={1}
+        style={{ marginTop: 24 }}
+      >
         <Paragraph>
           <strong>Settings coming soon:</strong>
         </Paragraph>

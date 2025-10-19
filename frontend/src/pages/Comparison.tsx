@@ -141,7 +141,14 @@ export const Comparison = () => {
   return (
     <div>
       {/* Page Header */}
-      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+      <div
+        className="page-header"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
         <div>
           <h1 className="page-header-title">
             <SwapOutlined style={{ marginRight: 12 }} />

@@ -13,15 +13,7 @@ import {
   FundProjectionScreenOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
-import {
-  Button,
-  Col,
-  message,
-  Row,
-  Select,
-  Space,
-  Typography,
-} from "antd";
+import { Button, Col, message, Row, Select, Space, Typography } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 
@@ -146,8 +138,8 @@ export default function Correlation() {
         </h1>
         <p className="page-header-description">
           Analyze relationships between different metrics to discover patterns
-          and dependencies. A strong correlation indicates that two metrics
-          tend to change together.
+          and dependencies. A strong correlation indicates that two metrics tend
+          to change together.
         </p>
       </div>
 

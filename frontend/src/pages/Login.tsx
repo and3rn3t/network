@@ -41,15 +41,25 @@ const Login: React.FC = () => {
           "linear-gradient(135deg, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 100%)",
       }}
     >
-      <MaterialCard
-        elevation={3}
-        style={{ width: 450 }}
-      >
+      <MaterialCard elevation={3} style={{ width: 450 }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <h1 className="md-headline-large" style={{ marginBottom: 8, background: "linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+          <h1
+            className="md-headline-large"
+            style={{
+              marginBottom: 8,
+              background:
+                "linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
             📊 UniFi Insights
           </h1>
-          <p className="md-body-large" style={{ color: "var(--md-sys-color-on-surface-variant)" }}>
+          <p
+            className="md-body-large"
+            style={{ color: "var(--md-sys-color-on-surface-variant)" }}
+          >
             Historical Analysis & Intelligence Platform
           </p>
         </div>
