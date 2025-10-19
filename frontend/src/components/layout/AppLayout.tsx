@@ -7,9 +7,11 @@ import {
   BarChartOutlined,
   BellOutlined,
   DashboardOutlined,
+  DotChartOutlined,
   ExportOutlined,
   LineChartOutlined,
   SettingOutlined,
+  SwapOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 import React from "react";
@@ -31,6 +33,16 @@ export const AppLayout: React.FC = () => {
       key: "/historical",
       icon: <LineChartOutlined />,
       label: <Link to="/historical">Historical Analysis</Link>,
+    },
+    {
+      key: "/comparison",
+      icon: <SwapOutlined />,
+      label: <Link to="/comparison">Device Comparison</Link>,
+    },
+    {
+      key: "/correlation",
+      icon: <DotChartOutlined />,
+      label: <Link to="/correlation">Correlation Analysis</Link>,
     },
     {
       key: "/analytics",

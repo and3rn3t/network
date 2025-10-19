@@ -13,7 +13,9 @@ from backend.src.api import (
     alerts,
     analytics,
     auth,
+    cache,
     channels,
+    device_optimization,
     devices,
     health,
     rules,
@@ -50,6 +52,10 @@ add_exception_handlers(app)
 app.include_router(health.router, tags=["Health"])
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(devices.router, prefix="/api/devices", tags=["Devices"])
+app.include_router(
+    device_optimization.router, prefix="/api/devices", tags=["Device Optimization"]
+)
+app.include_router(cache.router, prefix="/api/cache", tags=["Cache Management"])
 app.include_router(alerts.router, prefix="/api/alerts", tags=["Alerts"])
 app.include_router(rules.router, prefix="/api/rules", tags=["Rules"])
 app.include_router(channels.router, prefix="/api/channels", tags=["Channels"])

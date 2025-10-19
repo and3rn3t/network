@@ -3,22 +3,22 @@
  * Primary value proposition - historical performance trends and analysis
  */
 
-import { useState } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  Typography,
-  Select,
-  Space,
-  Divider,
-  Alert,
-} from "antd";
-import { LineChartOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import type { TimeRange } from "@/components/TimeRangeSelector";
 import { TimeRangeSelector } from "@/components/TimeRangeSelector";
 import { DevicePerformanceChart } from "@/components/charts/DevicePerformanceChart";
-import { useDevices, useDeviceMetrics } from "@/hooks/useDevices";
+import { useDeviceMetrics, useDevices } from "@/hooks/useDevices";
+import { InfoCircleOutlined, LineChartOutlined } from "@ant-design/icons";
+import {
+  Alert,
+  Card,
+  Col,
+  Divider,
+  Row,
+  Select,
+  Space,
+  Typography,
+} from "antd";
+import { useState } from "react";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -92,7 +92,11 @@ export const Historical = () => {
           <Col xs={24} md={12}>
             <Space direction="vertical" style={{ width: "100%" }}>
               <Text strong>Time Range:</Text>
-              <TimeRangeSelector onChange={handleTimeRangeChange} />
+              <TimeRangeSelector
+                onChange={handleTimeRangeChange}
+                showQuickOptions={true}
+                defaultHours={24}
+              />
             </Space>
           </Col>
         </Row>

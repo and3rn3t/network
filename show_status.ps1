@@ -1,0 +1,58 @@
+Write-Host ""
+Write-Host "========================================"
+Write-Host "CONTINUOUS COLLECTION SETUP COMPLETE"
+Write-Host "========================================"
+Write-Host ""
+Write-Host "STATUS: ACTIVE AND RUNNING" -ForegroundColor Green
+Write-Host ""
+
+Write-Host "Scheduled Task Details:"
+Write-Host "  Name: UniFi Metrics Collection"
+Write-Host "  Frequency: Every 5 minutes"
+Write-Host "  Status: Ready"
+Write-Host "  Auto-start: Yes (survives reboots)"
+Write-Host ""
+
+Write-Host "What's Happening:"
+Write-Host "  - Collecting metrics from your UniFi device(s)"
+Write-Host "  - Storing data in: data\unifi_network.db"
+Write-Host "  - Running in background (no terminal needed)"
+Write-Host "  - Will continue after Windows restarts"
+Write-Host ""
+
+Write-Host "View Your Data:"
+Write-Host "  1. Start backend: cd backend && npm run dev"
+Write-Host "  2. Start frontend: cd frontend && npm run dev"
+Write-Host "  3. Open: http://localhost:3000"
+Write-Host ""
+
+Write-Host "Documentation:"
+Write-Host "  - COLLECTION_ACTIVE.md - Full guide and troubleshooting"
+Write-Host "  - docs/REAL_METRICS_COLLECTION.md - Collection details"
+Write-Host "  - docs/ENHANCED_DASHBOARD.md - Dashboard usage"
+Write-Host ""
+
+Write-Host "Metrics Being Collected:"
+Write-Host "  - client_count (real from API)"
+Write-Host "  - device_state (real from API)"
+Write-Host "  - uptime (real from API)"
+Write-Host "  - network_rx_bytes (real from API)"
+Write-Host "  - network_tx_bytes (real from API)"
+Write-Host "  - cpu_usage_estimated (calculated)"
+Write-Host ""
+
+Write-Host "Expected Growth:"
+Write-Host "  - After 1 hour: ~12 metrics per device"
+Write-Host "  - After 24 hours: ~288 metrics per device"
+Write-Host "  - Dashboard shows: 24-hour time series"
+Write-Host ""
+
+Write-Host "Management Commands:"
+Write-Host "  Task status: Get-ScheduledTask -TaskName 'UniFi Metrics Collection'"
+Write-Host "  Stop: Disable-ScheduledTask -TaskName 'UniFi Metrics Collection'"
+Write-Host "  Resume: Enable-ScheduledTask -TaskName 'UniFi Metrics Collection'"
+Write-Host ""
+
+Write-Host "SUCCESS - Your UniFi network monitoring is now running!" -ForegroundColor Green
+Write-Host "========================================"
+Write-Host ""

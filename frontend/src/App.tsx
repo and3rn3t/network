@@ -12,6 +12,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 // Lazy-load pages for code splitting
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Historical = lazy(() => import("@/pages/Historical"));
+const Comparison = lazy(() => import("@/pages/Comparison"));
+const Correlation = lazy(() => import("@/pages/Correlation"));
 const Analytics = lazy(() => import("@/pages/Analytics"));
 const Alerts = lazy(() => import("@/pages/Alerts"));
 const Reports = lazy(() => import("@/pages/Reports"));
@@ -81,6 +83,8 @@ function App() {
                 >
                   <Route index element={<Dashboard />} />
                   <Route path="historical" element={<Historical />} />
+                  <Route path="comparison" element={<Comparison />} />
+                  <Route path="correlation" element={<Correlation />} />
                   <Route path="analytics" element={<Analytics />} />
                   <Route path="alerts" element={<Alerts />} />
                   <Route path="reports" element={<Reports />} />
