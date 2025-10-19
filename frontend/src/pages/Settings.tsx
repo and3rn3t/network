@@ -3,13 +3,118 @@
  */
 
 import { MaterialCard } from "@/components/MaterialCard";
-import { SettingOutlined } from "@ant-design/icons";
-import { Typography } from "antd";
-import React from "react";
+import {
+  BellOutlined,
+  ExperimentOutlined,
+  NotificationOutlined,
+  SettingOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { Divider, Tabs, Typography } from "antd";
+import React, { useState } from "react";
 
-const { Paragraph } = Typography;
+const { Text } = Typography;
+
+// Tab components (will be implemented separately)
+const AlertRulesTab = React.lazy(
+  () => import("@/components/settings/AlertRulesTab")
+);
+const NotificationChannelsTab = React.lazy(
+  () => import("@/components/settings/NotificationChannelsTab")
+);
+const UserPreferencesTab = React.lazy(
+  () => import("@/components/settings/UserPreferencesTab")
+);
+const AdvancedTab = React.lazy(
+  () => import("@/components/settings/AdvancedTab")
+);
 
 const Settings: React.FC = () => {
+  const [activeTab, setActiveTab] = useState("alert-rules");
+
+  const tabItems = [
+    {
+      key: "alert-rules",
+      label: (
+        <span>
+          <BellOutlined />
+          Alert Rules
+        </span>
+      ),
+      children: (
+        <React.Suspense
+          fallback={
+            <MaterialCard elevation={1}>
+              <Text>Loading...</Text>
+            </MaterialCard>
+          }
+        >
+          <AlertRulesTab />
+        </React.Suspense>
+      ),
+    },
+    {
+      key: "notification-channels",
+      label: (
+        <span>
+          <NotificationOutlined />
+          Notification Channels
+        </span>
+      ),
+      children: (
+        <React.Suspense
+          fallback={
+            <MaterialCard elevation={1}>
+              <Text>Loading...</Text>
+            </MaterialCard>
+          }
+        >
+          <NotificationChannelsTab />
+        </React.Suspense>
+      ),
+    },
+    {
+      key: "preferences",
+      label: (
+        <span>
+          <UserOutlined />
+          User Preferences
+        </span>
+      ),
+      children: (
+        <React.Suspense
+          fallback={
+            <MaterialCard elevation={1}>
+              <Text>Loading...</Text>
+            </MaterialCard>
+          }
+        >
+          <UserPreferencesTab />
+        </React.Suspense>
+      ),
+    },
+    {
+      key: "advanced",
+      label: (
+        <span>
+          <ExperimentOutlined />
+          Advanced
+        </span>
+      ),
+      children: (
+        <React.Suspense
+          fallback={
+            <MaterialCard elevation={1}>
+              <Text>Loading...</Text>
+            </MaterialCard>
+          }
+        >
+          <AdvancedTab />
+        </React.Suspense>
+      ),
+    },
+  ];
+
   return (
     <div>
       {/* Page Header */}
@@ -23,20 +128,17 @@ const Settings: React.FC = () => {
         </p>
       </div>
 
-      <MaterialCard
-        title="⚙️ Configuration"
-        elevation={1}
-        style={{ marginTop: 24 }}
-      >
-        <Paragraph>
-          <strong>Settings coming soon:</strong>
-        </Paragraph>
-        <ul>
-          <li>Alert rule management</li>
-          <li>Notification channel configuration</li>
-          <li>User preferences</li>
-          <li>API key management</li>
-        </ul>
+      <Divider style={{ margin: "24px 0" }} />
+
+      {/* Settings Tabs */}
+      <MaterialCard elevation={1}>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={tabItems}
+          size="large"
+          style={{ marginTop: -16 }}
+        />
       </MaterialCard>
     </div>
   );

@@ -6,6 +6,7 @@
 import type { DeviceMetrics } from "@/types/device";
 import { Alert, Card, Empty, Spin } from "antd";
 import dayjs from "dayjs";
+import type { ReactElement } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -26,6 +27,28 @@ interface DevicePerformanceChartProps {
   color?: string;
   unit?: string;
 }
+
+// Custom dot component for anomaly highlighting
+const AnomalyDot = (props: {
+  cx?: number;
+  cy?: number;
+  payload?: { isAnomaly?: boolean };
+}): ReactElement | null => {
+  const { cx, cy, payload } = props;
+  if (!cx || !cy || !payload?.isAnomaly) {
+    return null;
+  }
+  return (
+    <circle
+      cx={cx}
+      cy={cy}
+      r={5}
+      fill="var(--md-sys-color-error)"
+      stroke="#fff"
+      strokeWidth={2}
+    />
+  );
+};
 
 export const DevicePerformanceChart: React.FC<DevicePerformanceChartProps> = ({
   data,
@@ -84,6 +107,19 @@ export const DevicePerformanceChart: React.FC<DevicePerformanceChartProps> = ({
   const max = Math.max(...values).toFixed(1);
   const min = Math.min(...values).toFixed(1);
 
+  // Detect anomalies (values that are 2 standard deviations from mean)
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const stdDev = Math.sqrt(
+    values.reduce((sum, val) => sum + (val - mean) ** 2, 0) / values.length
+  );
+  const threshold = 2 * stdDev;
+
+  // Mark anomalies
+  const chartDataWithAnomalies = chartData.map((point) => ({
+    ...point,
+    isAnomaly: Math.abs(point.value - mean) > threshold,
+  }));
+
   return (
     <Card
       title={title}
@@ -98,7 +134,7 @@ export const DevicePerformanceChart: React.FC<DevicePerformanceChartProps> = ({
     >
       <ResponsiveContainer width="100%" height={300}>
         <LineChart
-          data={chartData}
+          data={chartDataWithAnomalies}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
@@ -127,7 +163,7 @@ export const DevicePerformanceChart: React.FC<DevicePerformanceChartProps> = ({
             dataKey="value"
             stroke={color}
             strokeWidth={2}
-            dot={false}
+            dot={<AnomalyDot />}
             name={title}
             animationDuration={300}
           />
