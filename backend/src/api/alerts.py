@@ -11,12 +11,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from backend.src.middleware.error_handler import NotFoundError
 from backend.src.services.database_service import get_database
+from src.database.database import Database
 
 
 # Lazy import to avoid circular dependency
 def get_alert_repository(db):
     """Get AlertRepository instance."""
-    from src.database.repositories import AlertRepository
+    from src.database.repositories.alert_repository import AlertRepository
 
     return AlertRepository(db)
 

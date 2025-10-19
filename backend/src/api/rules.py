@@ -13,7 +13,7 @@ from backend.src.middleware.error_handler import NotFoundError
 from backend.src.services.database_service import get_database
 from src.alerts.models import AlertRule
 from src.database.database import Database
-from src.database.repositories import AlertRuleRepository
+from src.database.repositories.alert_rule_repository import AlertRuleRepository
 
 router = APIRouter()
 

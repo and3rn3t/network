@@ -9,11 +9,10 @@ from fastapi import APIRouter, Depends, Query
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from backend.src.database.database import Database
-from backend.src.database.repositories import HostRepository
-
 from backend.src.middleware.error_handler import NotFoundError
 from backend.src.services.database_service import get_database
+from src.database.database import Database
+from src.database.models import Host
 
 router = APIRouter()
 
@@ -31,37 +30,48 @@ async def list_devices(
 
     Returns paginated list of devices with optional filtering.
     """
-    host_repo = HostRepository(db)
-    hosts = host_repo.get_all()
+    # Build query with filters
+    # Note: network.db uses different column names than expected
+    query = "SELECT id, mac_address, name, model, type, ip_address, 'unknown' as status, firmware_version, 0 as uptime, last_seen FROM hosts WHERE 1=1"
+    params = []
 
-    # Apply filters
-    if status:
-        hosts = [h for h in hosts if h.status == status]
     if model:
-        hosts = [h for h in hosts if h.model and model.lower() in h.model.lower()]
+        query += " AND model LIKE ?"
+        params.append(f"%{model}%")
 
-    # Get total count before pagination
-    total = len(hosts)
+    # Get total count
+    count_query = "SELECT COUNT(*) FROM hosts WHERE 1=1"
+    count_params = []
+    if model:
+        count_query += " AND model LIKE ?"
+        count_params.append(f"%{model}%")
 
-    # Apply pagination
-    hosts = hosts[offset : offset + limit]
+    cursor = db.execute(count_query, tuple(count_params) if count_params else None)
+    total = cursor.fetchone()[0]
+
+    # Add pagination
+    query += f" LIMIT {limit} OFFSET {offset}"
+
+    # Execute query
+    cursor = db.execute(query, tuple(params) if params else None)
+    rows = cursor.fetchall()
 
     # Convert to dict format
     devices = [
         {
-            "id": h.id,
-            "mac": h.mac,
-            "name": h.name,
-            "model": h.model,
-            "type": h.type,
-            "ip": h.ip,
-            "status": h.status,
-            "version": h.version,
-            "uptime": h.uptime,
-            "last_seen": h.last_seen.isoformat() if h.last_seen else None,
-            "site_id": h.site_id,
+            "id": i,  # Use index as numeric ID since db uses TEXT id
+            "mac": row[1],
+            "name": row[2] or "Unknown",
+            "model": row[3],
+            "type": row[4],
+            "ip": row[5],
+            "status": "online",  # Default to online since we don't have status
+            "version": row[7],
+            "uptime": row[8],
+            "last_seen": row[9],
+            "site_id": None,
         }
-        for h in hosts
+        for i, row in enumerate(rows, start=1)
     ]
 
     return {
@@ -82,27 +92,32 @@ async def get_device(
 
     Returns complete device information including current status.
     """
-    host_repo = HostRepository(db)
-    host = host_repo.get_by_id(device_id)
+    # Get device using direct SQL (avoid circular import)
+    query = """
+        SELECT id, mac_address, name, model, type, ip_address,
+               firmware_version, last_seen
+        FROM hosts
+        ORDER BY rowid
+        LIMIT 1 OFFSET ?
+    """
+    cursor = db.execute(query, (device_id - 1,))
+    row = cursor.fetchone()
 
-    if not host:
+    if not row:
         raise NotFoundError(f"Device with ID {device_id} not found")
 
     return {
-        "id": host.id,
-        "mac": host.mac,
-        "name": host.name,
-        "model": host.model,
-        "type": host.type,
-        "ip": host.ip,
-        "status": host.status,
-        "version": host.version,
-        "uptime": host.uptime,
-        "adopted": host.adopted,
-        "disabled": host.disabled,
-        "site_id": host.site_id,
-        "first_seen": host.first_seen.isoformat() if host.first_seen else None,
-        "last_seen": host.last_seen.isoformat() if host.last_seen else None,
+        "id": device_id,
+        "mac": row[1],
+        "name": row[2] or "Unknown",
+        "model": row[3],
+        "type": row[4],
+        "ip": row[5],
+        "status": "online",  # Could enhance with real-time status check
+        "version": row[6],
+        "uptime": 0,  # Could calculate from metrics
+        "last_seen": row[7],
+        "site_id": None,
     }
 
 
@@ -122,27 +137,37 @@ async def get_device_metrics(
     """
     from datetime import datetime, timedelta
 
-    # Verify device exists
-    host_repo = HostRepository(db)
-    host = host_repo.get_by_id(device_id)
-    if not host:
+    # First, we need to get the host_id (TEXT) from the numeric device_id
+    # Query hosts to get the actual TEXT id
+    host_query = """
+        SELECT id, name FROM hosts
+        ORDER BY rowid
+        LIMIT 1 OFFSET ?
+    """
+    host_cursor = db.execute(host_query, (device_id - 1,))
+    host_row = host_cursor.fetchone()
+
+    if not host_row:
         raise NotFoundError(f"Device with ID {device_id} not found")
 
-    # Get metrics from database
-    since = datetime.now() - timedelta(hours=hours)
+    host_id = host_row[0]  # TEXT id from database
+    device_name = host_row[1] or "Unknown"
+
+    # Get metrics from database using the TEXT host_id
+    since = datetime.utcnow() - timedelta(hours=hours)
     query = """
-        SELECT metric_type, value, timestamp
+        SELECT metric_name, metric_value, unit, recorded_at
         FROM metrics
         WHERE host_id = ?
-        AND timestamp >= ?
+        AND recorded_at >= ?
     """
-    params = [device_id, since.isoformat()]
+    params = [host_id, since.isoformat() + "Z"]
 
     if metric_type:
-        query += " AND metric_type = ?"
+        query += " AND metric_name = ?"
         params.append(metric_type)
 
-    query += " ORDER BY timestamp DESC LIMIT 1000"
+    query += " ORDER BY recorded_at ASC"
 
     rows = db.execute(query, tuple(params)).fetchall()
 
@@ -150,14 +175,15 @@ async def get_device_metrics(
         {
             "metric_type": row[0],
             "value": row[1],
-            "timestamp": row[2],
+            "unit": row[2],
+            "timestamp": row[3],
         }
         for row in rows
     ]
 
     return {
         "device_id": device_id,
-        "device_name": host.name,
+        "device_name": device_name,
         "metrics": metrics,
         "count": len(metrics),
         "hours": hours,
@@ -176,25 +202,29 @@ async def get_device_alerts(
 
     Returns recent alerts related to this device.
     """
-    from src.database.repositories import AlertRepository
+    # Get device using direct SQL to get TEXT host_id
+    host_query = """
+        SELECT id, name FROM hosts
+        ORDER BY rowid
+        LIMIT 1 OFFSET ?
+    """
+    host_cursor = db.execute(host_query, (device_id - 1,))
+    host_row = host_cursor.fetchone()
 
-    # Verify device exists
-    host_repo = HostRepository(db)
-    host = host_repo.get_by_id(device_id)
-    if not host:
+    if not host_row:
         raise NotFoundError(f"Device with ID {device_id} not found")
 
-    # Get alerts for this device
-    alert_repo = AlertRepository(db)
+    host_id = host_row[0]  # TEXT id from database
+    device_name = host_row[1] or "Unknown"
 
-    # Query alerts
+    # Query alerts for this device
     query = """
         SELECT id, rule_id, host_id, status, severity, message,
                triggered_at, acknowledged_at, resolved_at
         FROM alert_history
         WHERE host_id = ?
     """
-    params = [device_id]
+    params: list = [host_id]
 
     if status:
         query += " AND status = ?"
@@ -222,7 +252,7 @@ async def get_device_alerts(
 
     return {
         "device_id": device_id,
-        "device_name": host.name,
+        "device_name": device_name,
         "alerts": alerts,
         "count": len(alerts),
     }

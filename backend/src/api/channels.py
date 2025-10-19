@@ -12,7 +12,9 @@ from backend.src.middleware.error_handler import NotFoundError
 from backend.src.services.database_service import get_database
 from src.alerts.models import NotificationChannel
 from src.database.database import Database
-from src.database.repositories import NotificationChannelRepository
+from src.database.repositories.notification_channel_repository import (
+    NotificationChannelRepository,
+)
 
 router = APIRouter()
 
