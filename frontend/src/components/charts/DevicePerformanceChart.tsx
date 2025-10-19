@@ -88,7 +88,7 @@ export const DevicePerformanceChart: React.FC<DevicePerformanceChartProps> = ({
     <Card
       title={title}
       extra={
-        <span style={{ fontSize: "12px", color: "#888" }}>
+        <span style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.65)" }}>
           Avg: {avg}
           {unit} | Max: {max}
           {unit} | Min: {min}

@@ -210,7 +210,9 @@ export const EnhancedTimeRangeSelector: React.FC<
                   <SwapOutlined />
                   <Text strong>Comparison Mode</Text>
                   <Tooltip title="Compare two different time periods">
-                    <InfoCircleOutlined style={{ color: "#8c8c8c" }} />
+                    <InfoCircleOutlined
+                      style={{ color: "rgba(0, 0, 0, 0.45)" }}
+                    />
                   </Tooltip>
                 </Space>
               </Col>

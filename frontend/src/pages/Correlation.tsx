@@ -272,7 +272,7 @@ export default function Correlation() {
       ) : (
         <MaterialCard elevation={1}>
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
-            <Text type="secondary" style={{ fontSize: 16 }}>
+            <Text style={{ fontSize: 16, color: "rgba(0, 0, 0, 0.65)" }}>
               Select a device and time range to begin correlation analysis
             </Text>
           </div>

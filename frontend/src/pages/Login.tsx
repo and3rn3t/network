@@ -58,7 +58,7 @@ const Login: React.FC = () => {
           </h1>
           <p
             className="md-body-large"
-            style={{ color: "var(--md-sys-color-on-surface-variant)" }}
+            style={{ color: "rgba(0, 0, 0, 0.7)", margin: 0 }}
           >
             Historical Analysis & Intelligence Platform
           </p>
@@ -91,11 +91,11 @@ const Login: React.FC = () => {
             textAlign: "center",
             marginTop: 24,
             padding: 16,
-            background: "var(--md-sys-color-surface-variant)",
+            background: "rgba(33, 33, 33, 0.05)",
             borderRadius: 8,
           }}
         >
-          <Text type="secondary" style={{ fontSize: 12 }}>
+          <Text style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.7)" }}>
             <strong>Default credentials:</strong> admin / admin123!
           </Text>
         </div>

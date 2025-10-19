@@ -196,7 +196,7 @@ export const Comparison = () => {
                   </Option>
                 ))}
               </Select>
-              <Text type="secondary" style={{ fontSize: 12 }}>
+              <Text style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.65)" }}>
                 Select up to 6 devices for comparison
               </Text>
             </Space>
