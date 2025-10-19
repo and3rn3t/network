@@ -9,10 +9,11 @@ from fastapi import APIRouter, Depends, Query
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from backend.src.middleware.error_handler import NotFoundError
-from backend.src.services.database_service import get_database
 from backend.src.database.database import Database
 from backend.src.database.repositories import HostRepository
+
+from backend.src.middleware.error_handler import NotFoundError
+from backend.src.services.database_service import get_database
 
 router = APIRouter()
 
