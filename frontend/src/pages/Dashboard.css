@@ -1,0 +1,72 @@
+/**
+ * Dashboard Page Styles
+ */
+
+.dashboard-container {
+  min-height: 100%;
+}
+
+.dashboard-loading {
+  text-align: center;
+  padding: 48px;
+}
+
+.dashboard-live-badge {
+  margin-left: var(--spacing-md);
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.dashboard-live-badge .ant-badge-status-dot {
+  width: 10px;
+  height: 10px;
+}
+
+.dashboard-stat-card {
+  position: relative;
+  overflow: visible;
+  transition: transform 200ms var(--md-sys-motion-easing-standard);
+}
+
+.dashboard-stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.dashboard-statistic {
+  position: relative;
+}
+
+.dashboard-statistic.animated-value .ant-statistic-content-value {
+  transition: all 300ms var(--md-sys-motion-easing-standard);
+}
+
+.dashboard-stat-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-primary-container);
+  padding: 4px 8px;
+  border-radius: var(--md-sys-shape-corner-full);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.dashboard-stat-indicator .anticon {
+  font-size: 10px;
+}
+
+.dashboard-info-list {
+  margin-left: 24px;
+  margin-top: 16px;
+}
+
+.dashboard-info-footer {
+  margin-top: 16px;
+  font-weight: 600;
+}

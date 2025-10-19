@@ -5,7 +5,8 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LoadingFallback } from "@/components/LoadingFallback";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { materialTheme } from "@/theme/material-theme";
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import { materialDarkTheme, materialTheme } from "@/theme/material-theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider } from "antd";
 import React, { Suspense, lazy } from "react";
@@ -46,38 +47,49 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
+// Theme wrapper that applies the correct Ant Design theme
+const ThemedApp: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { effectiveTheme } = useTheme();
+  const antTheme =
+    effectiveTheme === "dark" ? materialDarkTheme : materialTheme;
+
+  return <ConfigProvider theme={antTheme}>{children}</ConfigProvider>;
+};
+
 function App() {
   return (
-    <ConfigProvider theme={materialTheme}>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <BrowserRouter>
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route
-                  path="/"
-                  element={
-                    <PrivateRoute>
-                      <AppLayout />
-                    </PrivateRoute>
-                  }
-                >
-                  <Route index element={<Dashboard />} />
-                  <Route path="historical" element={<Historical />} />
-                  <Route path="comparison" element={<Comparison />} />
-                  <Route path="correlation" element={<Correlation />} />
-                  <Route path="analytics" element={<Analytics />} />
-                  <Route path="alerts" element={<Alerts />} />
-                  <Route path="reports" element={<Reports />} />
-                  <Route path="settings" element={<Settings />} />
-                </Route>
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ConfigProvider>
+    <ThemeProvider>
+      <ThemedApp>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <BrowserRouter>
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route
+                    path="/"
+                    element={
+                      <PrivateRoute>
+                        <AppLayout />
+                      </PrivateRoute>
+                    }
+                  >
+                    <Route index element={<Dashboard />} />
+                    <Route path="historical" element={<Historical />} />
+                    <Route path="comparison" element={<Comparison />} />
+                    <Route path="correlation" element={<Correlation />} />
+                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="alerts" element={<Alerts />} />
+                    <Route path="reports" element={<Reports />} />
+                    <Route path="settings" element={<Settings />} />
+                  </Route>
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ThemedApp>
+    </ThemeProvider>
   );
 }
 

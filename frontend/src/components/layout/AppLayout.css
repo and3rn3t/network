@@ -49,10 +49,11 @@
 .app-logo-subtitle {
   font-size: 0.75rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--md-sys-color-on-primary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-top: 2px;
+  opacity: 0.9;
 }
 
 /* Menu */
@@ -87,7 +88,11 @@
 }
 
 .app-menu .ant-menu-item:hover:not(.ant-menu-item-selected) {
-  background-color: rgba(30, 136, 229, 0.08) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-primary) 8%,
+    transparent
+  ) !important;
 }
 
 .app-menu .ant-menu-item .anticon {
@@ -142,7 +147,11 @@
 }
 
 .app-header-actions .ant-btn:hover {
-  background-color: rgba(30, 136, 229, 0.08);
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-primary) 8%,
+    transparent
+  );
 }
 
 .app-header-user-button {

@@ -1,0 +1,66 @@
+/**
+ * ConnectionStatus Component Styles
+ */
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-variant);
+  transition: all 200ms var(--md-sys-motion-easing-standard);
+}
+
+.connection-status:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.connection-status-text {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  transition: color 200ms var(--md-sys-motion-easing-standard);
+}
+
+.connection-status-text.connection-status-connected {
+  color: var(--md-sys-color-primary);
+}
+
+.connection-status-text.connection-status-connecting {
+  color: var(--md-sys-color-tertiary);
+}
+
+.connection-status-text.connection-status-disconnected {
+  color: var(--md-sys-color-outline);
+}
+
+.connection-status-text.connection-status-error {
+  color: var(--md-sys-color-error);
+}
+
+.connection-status-tooltip {
+  white-space: pre-line;
+}
+
+/* Badge customizations for Material Design 3 */
+.connection-status .ant-badge-status-dot {
+  width: 8px;
+  height: 8px;
+}
+
+.connection-status .ant-badge-status-success {
+  background-color: var(--md-sys-color-primary);
+}
+
+.connection-status .ant-badge-status-processing {
+  background-color: var(--md-sys-color-tertiary);
+}
+
+.connection-status .ant-badge-status-error {
+  background-color: var(--md-sys-color-error);
+}
+
+.connection-status .ant-badge-status-default {
+  background-color: var(--md-sys-color-outline);
+}

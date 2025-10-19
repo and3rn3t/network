@@ -1,0 +1,77 @@
+/**
+ * Theme Toggle Component Styles
+ */
+
+.theme-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background-color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  border-radius: var(--md-sys-shape-corner-full);
+  cursor: pointer;
+  font-size: 18px;
+  transition: all var(--md-sys-motion-duration-short)
+    var(--md-sys-motion-easing-standard);
+}
+
+.theme-toggle-button:hover {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transform: scale(1.05);
+}
+
+.theme-toggle-button:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle-button:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.theme-toggle-segmented {
+  background-color: var(--md-sys-color-surface-variant);
+  border-radius: var(--md-sys-shape-corner-full);
+  padding: 4px;
+}
+
+.theme-toggle-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.theme-toggle-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+}
+
+/* Responsive - hide labels on small screens */
+@media (max-width: 768px) {
+  .theme-toggle-label {
+    display: none;
+  }
+
+  .theme-toggle-option {
+    padding: 0 4px;
+  }
+}
+
+/* Smooth theme transition animation */
+:root {
+  transition: background-color var(--md-sys-motion-duration-medium)
+      var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-medium)
+      var(--md-sys-motion-easing-standard);
+}
+
+/* Prevent transitions on page load */
+.preload * {
+  transition: none !important;
+}

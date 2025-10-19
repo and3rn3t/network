@@ -2,7 +2,9 @@
  * Main application layout with navigation - Material Design 3
  */
 
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRealTimeAlerts } from "@/hooks/useRealTime";
 import {
   BarChartOutlined,
   BellOutlined,
@@ -20,12 +22,14 @@ import { Avatar, Badge, Button, Dropdown, Layout, Menu } from "antd";
 import React from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import "./AppLayout.css";
+import { ConnectionStatus } from "./ConnectionStatus";
 
 const { Header, Sider, Content, Footer } = Layout;
 
 export const AppLayout: React.FC = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { newAlertCount } = useRealTimeAlerts();
 
   const menuItems = [
     {
@@ -57,7 +61,7 @@ export const AppLayout: React.FC = () => {
       key: "/alerts",
       icon: <BellOutlined />,
       label: (
-        <Badge count={0} offset={[10, 0]}>
+        <Badge count={newAlertCount} offset={[10, 0]}>
           <Link to="/alerts">Alert Intelligence</Link>
         </Badge>
       ),
@@ -122,8 +126,10 @@ export const AppLayout: React.FC = () => {
             </p>
           </div>
           <div className="app-header-actions">
+            <ConnectionStatus />
+            <ThemeToggle variant="button" />
             <Button type="text" icon={<BellOutlined />} size="large">
-              <Badge count={0} offset={[0, 0]} />
+              <Badge count={newAlertCount} offset={[0, 0]} />
             </Button>
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <Button
