@@ -1,8 +1,8 @@
 """Authentication service for JWT tokens and password hashing."""
 
 import sys
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Optional
 
 from jose import JWTError, jwt
@@ -51,9 +51,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(
-    data: dict, expires_delta: Optional[timedelta] = None
-) -> str:
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """
     Create a JWT access token.
 

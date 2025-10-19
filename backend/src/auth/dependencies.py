@@ -5,15 +5,15 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
+from backend.src.database.user_repository import User, UserRepository
+from backend.src.middleware.error_handler import AuthenticationError
 from backend.src.services.auth_service import decode_access_token
 from backend.src.services.database_service import get_database
-from backend.src.database.user_repository import UserRepository, User
-from backend.src.middleware.error_handler import AuthenticationError
 
 # Security scheme
 security = HTTPBearer(auto_error=False)

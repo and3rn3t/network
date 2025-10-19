@@ -111,7 +111,7 @@ Connect to `ws://localhost:8000/api/ws?client_id=your-client-id`
 ```json
 {
   "type": "subscribe",
-  "room": "metrics"  // or "alerts", "devices", "health"
+  "room": "metrics" // or "alerts", "devices", "health"
 }
 ```
 

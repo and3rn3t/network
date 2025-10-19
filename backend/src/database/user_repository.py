@@ -1,8 +1,8 @@
 """User repository for database operations."""
 
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 # Add project root to path
@@ -72,7 +72,7 @@ class UserRepository:
             User object or None if not found
         """
         query = """
-            SELECT id, username, email, full_name, hashed_password, 
+            SELECT id, username, email, full_name, hashed_password,
                    is_active, is_superuser, created_at, last_login
             FROM users
             WHERE username = ?
@@ -89,8 +89,11 @@ class UserRepository:
                 is_active=bool(row["is_active"]),
                 is_superuser=bool(row["is_superuser"]),
                 created_at=datetime.fromisoformat(row["created_at"]),
-                last_login=(datetime.fromisoformat(row["last_login"])
-                           if row["last_login"] else None),
+                last_login=(
+                    datetime.fromisoformat(row["last_login"])
+                    if row["last_login"]
+                    else None
+                ),
             )
         return None
 
@@ -122,8 +125,11 @@ class UserRepository:
                 is_active=bool(row["is_active"]),
                 is_superuser=bool(row["is_superuser"]),
                 created_at=datetime.fromisoformat(row["created_at"]),
-                last_login=(datetime.fromisoformat(row["last_login"])
-                           if row["last_login"] else None),
+                last_login=(
+                    datetime.fromisoformat(row["last_login"])
+                    if row["last_login"]
+                    else None
+                ),
             )
         return None
 
@@ -155,8 +161,7 @@ class UserRepository:
             VALUES (?, ?, ?, ?, ?)
         """
         cursor = self.db.execute(
-            query,
-            (username, email, full_name, hashed_password, int(is_superuser))
+            query, (username, email, full_name, hashed_password, int(is_superuser))
         )
         self.db.get_connection().commit()
 
@@ -229,8 +234,11 @@ class UserRepository:
                     is_active=bool(row["is_active"]),
                     is_superuser=bool(row["is_superuser"]),
                     created_at=datetime.fromisoformat(row["created_at"]),
-                    last_login=(datetime.fromisoformat(row["last_login"])
-                               if row["last_login"] else None),
+                    last_login=(
+                        datetime.fromisoformat(row["last_login"])
+                        if row["last_login"]
+                        else None
+                    ),
                 )
             )
 

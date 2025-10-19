@@ -1,19 +1,20 @@
 """WebSocket API endpoints."""
 
-import sys
 import asyncio
 import logging
+import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
-from datetime import datetime, timedelta
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query, Depends
+
+from fastapi import APIRouter, Depends, Query, WebSocket, WebSocketDisconnect
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from src.database.database import Database
 from backend.src.services.database_service import get_database
 from backend.src.services.websocket_manager import manager
+from src.database.database import Database
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

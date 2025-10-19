@@ -137,7 +137,7 @@
 
     <div class="container">
         <div id="status" class="status disconnected">Disconnected</div>
-        
+
         <div class="controls">
             <button class="primary" onclick="connect()" id="connectBtn">Connect</button>
             <button class="danger" onclick="disconnect()" id="disconnectBtn" disabled>Disconnect</button>
@@ -213,7 +213,7 @@
                     const elapsed = Math.floor((Date.now() - connectTime) / 1000);
                     const minutes = Math.floor(elapsed / 60);
                     const seconds = elapsed % 60;
-                    document.getElementById('connTime').textContent = 
+                    document.getElementById('connTime').textContent =
                         `${minutes}:${seconds.toString().padStart(2, '0')}`;
                 }
             }, 1000);

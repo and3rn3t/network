@@ -2,8 +2,9 @@
 
 import json
 import logging
-from typing import Dict, Set, List
 from datetime import datetime
+from typing import Dict, List, Set
+
 from fastapi import WebSocket
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,9 @@ class ConnectionManager:
         """
         await websocket.accept()
         self.active_connections[client_id] = websocket
-        logger.info(f"Client {client_id} connected. Total connections: {len(self.active_connections)}")
+        logger.info(
+            f"Client {client_id} connected. Total connections: {len(self.active_connections)}"
+        )
 
         # Send welcome message
         await self.send_personal_message(
@@ -56,7 +59,9 @@ class ConnectionManager:
         """
         if client_id in self.active_connections:
             del self.active_connections[client_id]
-            logger.info(f"Client {client_id} disconnected. Total connections: {len(self.active_connections)}")
+            logger.info(
+                f"Client {client_id} disconnected. Total connections: {len(self.active_connections)}"
+            )
 
         # Remove from all rooms
         for room_clients in self.rooms.values():
@@ -141,7 +146,9 @@ class ConnectionManager:
                 try:
                     await self.active_connections[client_id].send_json(message)
                 except Exception as e:
-                    logger.error(f"Error broadcasting to {client_id} in room {room}: {e}")
+                    logger.error(
+                        f"Error broadcasting to {client_id} in room {room}: {e}"
+                    )
                     disconnected_clients.append(client_id)
 
         # Clean up disconnected clients

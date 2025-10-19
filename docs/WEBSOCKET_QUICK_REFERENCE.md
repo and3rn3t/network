@@ -1,7 +1,7 @@
 # WebSocket Quick Reference Guide
 
-**UniFi Network API - WebSocket Server**  
-**Version**: 1.0.0  
+**UniFi Network API - WebSocket Server**
+**Version**: 1.0.0
 **Status**: Production Ready ✅
 
 ---
@@ -9,15 +9,15 @@
 ## 🔌 Connection
 
 ```javascript
-const ws = new WebSocket('ws://localhost:8000/api/ws?client_id=my-client');
+const ws = new WebSocket("ws://localhost:8000/api/ws?client_id=my-client");
 
 ws.onopen = () => {
-    console.log('Connected!');
+  console.log("Connected!");
 };
 
 ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    console.log('Received:', data);
+  const data = JSON.parse(event.data);
+  console.log("Received:", data);
 };
 ```
 
@@ -25,12 +25,12 @@ ws.onmessage = (event) => {
 
 ## 📡 Available Rooms
 
-| Room | Description | Update Frequency |
-|------|-------------|------------------|
+| Room      | Description                   | Update Frequency |
+| --------- | ----------------------------- | ---------------- |
 | `metrics` | Device metrics and statistics | Every 10 seconds |
-| `alerts` | Alert notifications | Immediate |
-| `devices` | Device status changes | Immediate |
-| `health` | Network health updates | Every 30 seconds |
+| `alerts`  | Alert notifications           | Immediate        |
+| `devices` | Device status changes         | Immediate        |
+| `health`  | Network health updates        | Every 30 seconds |
 
 ---
 
@@ -39,6 +39,7 @@ ws.onmessage = (event) => {
 ### Client → Server
 
 **Subscribe to Room**
+
 ```json
 {
   "type": "subscribe",
@@ -47,6 +48,7 @@ ws.onmessage = (event) => {
 ```
 
 **Unsubscribe from Room**
+
 ```json
 {
   "type": "unsubscribe",
@@ -55,6 +57,7 @@ ws.onmessage = (event) => {
 ```
 
 **Ping (Connection Health Check)**
+
 ```json
 {
   "type": "ping"
@@ -64,6 +67,7 @@ ws.onmessage = (event) => {
 ### Server → Client
 
 **Welcome Message** (on connection)
+
 ```json
 {
   "type": "connection",
@@ -74,6 +78,7 @@ ws.onmessage = (event) => {
 ```
 
 **Subscription Confirmation**
+
 ```json
 {
   "type": "subscription",
@@ -84,6 +89,7 @@ ws.onmessage = (event) => {
 ```
 
 **Metrics Update**
+
 ```json
 {
   "type": "metrics",
@@ -99,6 +105,7 @@ ws.onmessage = (event) => {
 ```
 
 **Alert Notification**
+
 ```json
 {
   "type": "alert",
@@ -112,6 +119,7 @@ ws.onmessage = (event) => {
 ```
 
 **Device Update**
+
 ```json
 {
   "type": "device",
@@ -123,6 +131,7 @@ ws.onmessage = (event) => {
 ```
 
 **Pong Response**
+
 ```json
 {
   "type": "pong",
@@ -135,11 +144,13 @@ ws.onmessage = (event) => {
 ## 🔗 HTTP Endpoints
 
 ### Get Connection Statistics
+
 ```http
 GET /api/ws/stats
 ```
 
 **Response**:
+
 ```json
 {
   "total_connections": 3,
@@ -168,24 +179,24 @@ from websockets.asyncio.client import connect
 
 async def main():
     uri = "ws://localhost:8000/api/ws?client_id=python-client"
-    
+
     async with connect(uri) as websocket:
         # Receive welcome
         welcome = await websocket.recv()
         print(f"Connected: {welcome}")
-        
+
         # Subscribe to metrics
         await websocket.send(json.dumps({
             "type": "subscribe",
             "room": "metrics"
         }))
-        
+
         # Listen for updates
         while True:
             message = await websocket.recv()
             data = json.loads(message)
             print(f"Received: {data['type']}")
-            
+
             if data['type'] == 'metrics':
                 print(f"Devices: {data['data']['total_devices']}")
 
@@ -197,7 +208,7 @@ asyncio.run(main())
 ## 🌐 JavaScript/React Example
 
 ```javascript
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 function useWebSocket(url, room) {
   const [data, setData] = useState(null);
@@ -209,10 +220,12 @@ function useWebSocket(url, room) {
     ws.onopen = () => {
       setConnected(true);
       // Subscribe to room
-      ws.send(JSON.stringify({
-        type: 'subscribe',
-        room: room
-      }));
+      ws.send(
+        JSON.stringify({
+          type: "subscribe",
+          room: room,
+        })
+      );
     };
 
     ws.onmessage = (event) => {
@@ -223,7 +236,7 @@ function useWebSocket(url, room) {
     };
 
     ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error("WebSocket error:", error);
     };
 
     ws.onclose = () => {
@@ -238,14 +251,11 @@ function useWebSocket(url, room) {
 
 // Usage in component
 function Dashboard() {
-  const { data, connected } = useWebSocket(
-    'ws://localhost:8000/api/ws?client_id=dashboard',
-    'metrics'
-  );
+  const { data, connected } = useWebSocket("ws://localhost:8000/api/ws?client_id=dashboard", "metrics");
 
   return (
     <div>
-      <h1>Status: {connected ? 'Connected' : 'Disconnected'}</h1>
+      <h1>Status: {connected ? "Connected" : "Disconnected"}</h1>
       {data && (
         <div>
           <p>Devices: {data.total_devices}</p>
@@ -262,25 +272,30 @@ function Dashboard() {
 ## 🧪 Testing
 
 ### Start Test Server
+
 ```bash
 cd backend
 python test_server.py
 ```
 
 ### Test with Browser
+
 Open `backend/websocket_test.html` in your browser
 
 ### Test with Python
+
 ```bash
 python backend/quick_test.py
 ```
 
 ### Test Multiple Clients
+
 ```bash
 python backend/test_multi_clients.py
 ```
 
 ### Check Statistics
+
 ```bash
 curl http://localhost:8000/api/ws/stats
 ```
@@ -292,6 +307,7 @@ curl http://localhost:8000/api/ws/stats
 The WebSocket server runs on the same port as the REST API (default: 8000).
 
 **Environment Variables**:
+
 - `HOST`: Server host (default: "0.0.0.0")
 - `PORT`: Server port (default: 8000)
 - `LOG_LEVEL`: Logging level (default: "info")
@@ -319,15 +335,18 @@ The WebSocket server runs on the same port as the REST API (default: 8000).
 ## 🐛 Troubleshooting
 
 ### Connection Refused
+
 - Check if server is running: `curl http://localhost:8000/health`
 - Verify port is not in use: `netstat -an | findstr 8000`
 
 ### No Messages Received
+
 - Check subscription: Look for subscription confirmation message
 - Verify room name: Must be "metrics", "alerts", "devices", or "health"
 - Check server logs for broadcast activity
 
 ### Connection Drops
+
 - Implement ping/pong: Send ping every 30 seconds
 - Handle reconnection in client code
 - Check network connectivity
@@ -343,5 +362,5 @@ The WebSocket server runs on the same port as the REST API (default: 8000).
 
 ---
 
-**Last Updated**: October 18, 2025  
+**Last Updated**: October 18, 2025
 **Status**: ✅ Production Ready

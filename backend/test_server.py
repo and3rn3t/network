@@ -1,20 +1,20 @@
 """Minimal test server for WebSocket functionality."""
 
-import sys
-from pathlib import Path
-from datetime import datetime
 import asyncio
 import random
+import sys
+from datetime import datetime
+from pathlib import Path
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from backend.src.services.websocket_manager import manager
 from backend.src.api.websocket import router as websocket_router
+from backend.src.services.websocket_manager import manager
 
 # Create FastAPI app
 app = FastAPI(
@@ -57,7 +57,7 @@ async def health():
 async def simulate_periodic_data():
     """Simulate periodic metric updates."""
     await asyncio.sleep(5)  # Wait for server to start
-    
+
     while True:
         try:
             # Simulate metrics data
@@ -72,13 +72,15 @@ async def simulate_periodic_data():
                     "total_traffic_mbps": round(random.uniform(50, 200), 2),
                 },
             }
-            
+
             await manager.broadcast_to_room(metrics_data, "metrics")
-            print(f"📊 Broadcasted metrics to {len(manager.rooms.get('metrics', []))} clients")
-            
+            print(
+                f"📊 Broadcasted metrics to {len(manager.rooms.get('metrics', []))} clients"
+            )
+
         except Exception as e:
             print(f"Error broadcasting metrics: {e}")
-        
+
         await asyncio.sleep(10)  # Broadcast every 10 seconds
 
 
@@ -93,7 +95,7 @@ async def startup_event():
     print(f"🌐 Test client: Open backend/websocket_test.html in your browser")
     print(f"📝 API docs: http://localhost:8000/docs")
     print("=" * 70 + "\n")
-    
+
     # Start background task for simulated data
     asyncio.create_task(simulate_periodic_data())
 

@@ -45,6 +45,7 @@
 ### Core Implementation (570 lines)
 
 1. **`backend/src/services/websocket_manager.py`** (175 lines)
+
    - `ConnectionManager` class for WebSocket lifecycle
    - Active connections tracking (`Dict[str, WebSocket]`)
    - Room subscriptions (`Dict[str, Set[str]]`)
@@ -53,6 +54,7 @@
    - Statistics: get_connection_count, get_room_members
 
 2. **`backend/src/api/websocket.py`** (227 lines)
+
    - WebSocket endpoint at `/api/ws`
    - Stats endpoint at `/api/ws/stats`
    - Message handling: subscribe, unsubscribe, ping
@@ -71,6 +73,7 @@
 ### Test Clients (430 lines)
 
 4. **`backend/websocket_test.html`** (330 lines)
+
    - Interactive browser-based test client
    - Connection controls (connect/disconnect)
    - Room subscription buttons (metrics, alerts, devices, health)
@@ -80,6 +83,7 @@
    - Professional UI with Material Design colors
 
 5. **`backend/quick_test.py`** (85 lines)
+
    - Python WebSocket connection test
    - Tests: connect, subscribe, receive metrics, ping/pong, unsubscribe
    - Demonstrates full message flow

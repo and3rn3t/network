@@ -1,8 +1,9 @@
 """Test script for WebSocket broadcasting."""
 
 import asyncio
-import httpx
 from datetime import datetime
+
+import httpx
 
 
 async def test_websocket_stats():
@@ -84,7 +85,8 @@ async def main():
     print("\n" + "=" * 60)
     print("WebSocket Integration Notes:")
     print("=" * 60)
-    print("""
+    print(
+        """
 1. WebSocket endpoint: ws://localhost:8000/ws
 2. Test client: Open backend/websocket_test.html in browser
 3. Available rooms:
@@ -103,7 +105,8 @@ async def main():
    - broadcast_device_update(device_data)
    - broadcast_health_update(health_data)
    - broadcast_metrics_task(db) - background task
-    """)
+    """
+    )
 
 
 if __name__ == "__main__":

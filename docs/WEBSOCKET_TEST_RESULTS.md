@@ -10,18 +10,18 @@
 
 All WebSocket functionality has been **successfully tested** and is working correctly!
 
-| Test | Status | Details |
-|------|--------|---------|
-| Server Startup | ✅ PASS | Server started on port 8000 |
-| Single Client Connection | ✅ PASS | Connected and received welcome message |
-| Room Subscription | ✅ PASS | Subscribed to metrics room successfully |
-| Metrics Broadcasting | ✅ PASS | Received 3 metric broadcasts (10s intervals) |
-| Ping/Pong | ✅ PASS | Ping responded with pong correctly |
-| Unsubscribe | ✅ PASS | Unsubscribed from room successfully |
-| Multiple Clients | ✅ PASS | 4 concurrent clients connected |
-| Room Filtering | ✅ PASS | Only subscribed clients received messages |
-| Statistics Endpoint | ✅ PASS | GET /api/ws/stats working |
-| Connection Cleanup | ✅ PASS | Clients disconnected cleanly |
+| Test                     | Status  | Details                                      |
+| ------------------------ | ------- | -------------------------------------------- |
+| Server Startup           | ✅ PASS | Server started on port 8000                  |
+| Single Client Connection | ✅ PASS | Connected and received welcome message       |
+| Room Subscription        | ✅ PASS | Subscribed to metrics room successfully      |
+| Metrics Broadcasting     | ✅ PASS | Received 3 metric broadcasts (10s intervals) |
+| Ping/Pong                | ✅ PASS | Ping responded with pong correctly           |
+| Unsubscribe              | ✅ PASS | Unsubscribed from room successfully          |
+| Multiple Clients         | ✅ PASS | 4 concurrent clients connected               |
+| Room Filtering           | ✅ PASS | Only subscribed clients received messages    |
+| Statistics Endpoint      | ✅ PASS | GET /api/ws/stats working                    |
+| Connection Cleanup       | ✅ PASS | Clients disconnected cleanly                 |
 
 ---
 
