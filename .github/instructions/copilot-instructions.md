@@ -2,7 +2,15 @@
 
 ## Project Context
 
-This is a UniFi Network Controller API client library written in Python. The project provides a clean, Pythonic interface for interacting with UniFi Network Controllers to manage network devices, clients, and configurations.
+This is a comprehensive UniFi Network Controller monitoring and management system written in Python. The project provides:
+
+- **Core API Client** - Clean, Pythonic interface for UniFi Network Controllers
+- **Data Collection** - Automated polling and time-series data storage
+- **Analytics Engine** - Statistical analysis, trend detection, anomaly detection
+- **Alerting System** - Rule-based alerting with multi-channel notifications
+- **Dashboard & Reports** - Terminal UI, HTML/PDF reports, data export
+
+The system is designed for production use with full type safety, comprehensive testing, and extensive documentation.
 
 ## Code Style & Standards
 
@@ -141,6 +149,47 @@ except UniFiAPIError as e:
     print(f"API error: {e}")
 ```
 
+## Alert System Guidelines (Phase 4)
+
+### Alert Rules
+
+- Rules are defined with `AlertRule` dataclass (name, type, condition, threshold, severity)
+- Support threshold rules (numeric comparisons) and status_change rules
+- Always include cooldown periods to prevent alert spam
+- Use severity levels: info, warning, critical
+
+### Notification System
+
+- All notifiers inherit from `BaseNotifier` abstract class
+- Support multiple channels: Email (SMTP), Slack, Discord, generic webhooks
+- Implement parallel delivery via `NotificationManager`
+- Include severity filtering per channel (min_severity)
+- Always validate notification configs in notifier constructors
+
+### Alert Management
+
+- Use `AlertManager` as the high-level API (coordinates engine + notifications)
+- Support alert lifecycle: triggered → acknowledged → resolved
+- Implement muting for maintenance windows (duration-based or indefinite)
+- Track notification delivery status per alert
+- Provide CLI commands for all operations
+
+### Database Design
+
+- Alert tables: `alert_rules`, `alert_history`, `notification_channels`, `alert_mutes`
+- Use views for common queries (`v_active_alerts`, `v_recent_alerts_summary`)
+- Implement triggers for automatic timestamp management
+- Store notification configs as JSON in database
+- Foreign key constraints with CASCADE for cleanup
+
+### CLI Development
+
+- Use argparse with subcommands for clear command structure
+- Format output with emojis and tables for readability
+- Include confirmation prompts for destructive operations
+- Support --force flags to skip confirmations
+- Provide detailed help text and examples
+
 ## When Suggesting Code
 
 - Prioritize readability and maintainability
@@ -149,6 +198,7 @@ except UniFiAPIError as e:
 - Suggest logging for debugging
 - Think about real-world UniFi API quirks and edge cases
 - Provide complete, working examples when possible
+- For alerts, always consider cooldown periods and notification routing
 
 ## Security Considerations
 
@@ -157,3 +207,5 @@ except UniFiAPIError as e:
 - Support SSL certificate verification (with option to disable for self-signed)
 - Implement proper session cleanup
 - Clear sensitive data from memory when done
+- Store SMTP passwords in config files (not in code)
+- Validate webhook URLs before use

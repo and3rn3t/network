@@ -1,0 +1,6 @@
+{
+  "webhook_url": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
+  "platform": "slack",
+  "timeout": 10,
+  "min_severity": "warning"
+}

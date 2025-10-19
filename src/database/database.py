@@ -201,6 +201,30 @@ class Database:
 
         logger.info("Database schema initialized successfully")
 
+    def initialize_alerts(self):
+        """
+        Initialize alert system schema.
+
+        Reads schema_alerts.sql and creates alert-related tables, indexes, and views.
+        This is a separate migration to support phased rollout.
+        """
+        schema_path = Path(__file__).parent / "schema_alerts.sql"
+
+        if not schema_path.exists():
+            raise FileNotFoundError(f"Alert schema file not found: {schema_path}")
+
+        logger.info("Initializing alert system schema...")
+
+        with open(schema_path, "r") as f:
+            schema_sql = f.read()
+
+        # Use executescript for multiple statements
+        conn = self.get_connection()
+        with self.transaction():
+            conn.executescript(schema_sql)
+
+        logger.info("Alert system schema initialized successfully")
+
     def get_schema_version(self) -> str:
         """
         Get current database schema version.
