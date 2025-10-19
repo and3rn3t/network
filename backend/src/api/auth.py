@@ -9,28 +9,22 @@ from fastapi import APIRouter, Depends, HTTPException, status
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
+from backend.src.auth.dependencies import get_current_superuser, get_current_user
+from backend.src.database.user_repository import User, UserRepository
+from backend.src.middleware.error_handler import AuthenticationError, ValidationError
 from backend.src.schemas.auth import (
+    ChangePasswordRequest,
     LoginRequest,
     LoginResponse,
-    UserResponse,
     UserCreate,
-    ChangePasswordRequest,
+    UserResponse,
 )
 from backend.src.services.auth_service import (
-    verify_password,
-    get_password_hash,
     create_token_response,
+    get_password_hash,
+    verify_password,
 )
 from backend.src.services.database_service import get_database
-from backend.src.database.user_repository import UserRepository, User
-from backend.src.auth.dependencies import (
-    get_current_user,
-    get_current_superuser,
-)
-from backend.src.middleware.error_handler import (
-    AuthenticationError,
-    ValidationError,
-)
 
 router = APIRouter()
 
@@ -100,7 +94,7 @@ async def logout(current_user: Annotated[User, Depends(get_current_user)]):
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
     """Get current user information."""
     return user_to_response(current_user)

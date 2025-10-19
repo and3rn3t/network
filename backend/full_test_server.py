@@ -1,27 +1,24 @@
 """Full backend server with authentication for testing."""
 
-import sys
-from pathlib import Path
-from datetime import datetime
 import asyncio
-import random
 import logging
+import random
+import sys
+from datetime import datetime
+from pathlib import Path
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from backend.src.api import auth, health
+from backend.src.api import websocket as ws_router
 from backend.src.config import get_settings
 from backend.src.middleware.error_handler import add_exception_handlers
 from backend.src.services.websocket_manager import manager
-from backend.src.api import (
-    auth,
-    websocket as ws_router,
-    health,
-)
 
 # Get settings
 settings = get_settings()

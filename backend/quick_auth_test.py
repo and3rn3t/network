@@ -9,8 +9,7 @@ print("=" * 50)
 
 # Test login
 response = requests.post(
-    f"{BASE_URL}/api/auth/login",
-    json={"username": "admin", "password": "admin123!"}
+    f"{BASE_URL}/api/auth/login", json={"username": "admin", "password": "admin123!"}
 )
 
 if response.status_code == 200:
