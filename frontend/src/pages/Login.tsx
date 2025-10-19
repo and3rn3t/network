@@ -2,13 +2,14 @@
  * Login page component
  */
 
+import { MaterialCard } from "@/components/MaterialCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, message, Typography } from "antd";
+import { Button, Form, Input, message, Typography } from "antd";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -36,17 +37,21 @@ const Login: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        background:
+          "linear-gradient(135deg, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 100%)",
       }}
     >
-      <Card style={{ width: 450, boxShadow: "0 10px 40px rgba(0,0,0,0.2)" }}>
+      <MaterialCard
+        elevation={3}
+        style={{ width: 450 }}
+      >
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <Title level={2} style={{ marginBottom: 8 }}>
+          <h1 className="md-headline-large" style={{ marginBottom: 8, background: "linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
             📊 UniFi Insights
-          </Title>
-          <Text type="secondary">
+          </h1>
+          <p className="md-body-large" style={{ color: "var(--md-sys-color-on-surface-variant)" }}>
             Historical Analysis & Intelligence Platform
-          </Text>
+          </p>
         </div>
 
         <Form onFinish={onFinish} layout="vertical" size="large">
@@ -75,16 +80,16 @@ const Login: React.FC = () => {
           style={{
             textAlign: "center",
             marginTop: 24,
-            padding: "16px",
-            background: "#f5f5f5",
-            borderRadius: "4px",
+            padding: 16,
+            background: "var(--md-sys-color-surface-variant)",
+            borderRadius: 8,
           }}
         >
-          <Text type="secondary" style={{ fontSize: "12px" }}>
+          <Text type="secondary" style={{ fontSize: 12 }}>
             <strong>Default credentials:</strong> admin / admin123!
           </Text>
         </div>
-      </Card>
+      </MaterialCard>
     </div>
   );
 };

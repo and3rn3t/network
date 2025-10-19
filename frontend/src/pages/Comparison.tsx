@@ -1,3 +1,4 @@
+import { MaterialCard } from "@/components/MaterialCard";
 import type { TimeRange } from "@/components/TimeRangeSelector";
 import { TimeRangeSelector } from "@/components/TimeRangeSelector";
 import { ComparisonChart } from "@/components/charts/ComparisonChart";
@@ -7,12 +8,11 @@ import {
   CloseCircleOutlined,
   DownloadOutlined,
   InfoCircleOutlined,
-  PlusOutlined,
+  SwapOutlined,
 } from "@ant-design/icons";
 import {
   Alert,
   Button,
-  Card,
   Col,
   Divider,
   Empty,
@@ -24,7 +24,7 @@ import {
 } from "antd";
 import { useState } from "react";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 
 interface SelectedDevice {
@@ -33,11 +33,11 @@ interface SelectedDevice {
   color: string;
 }
 
-// Color palette for device comparison
+// Color palette for device comparison - using Material Design 3 colors
 const DEVICE_COLORS = [
-  "#1890ff", // Blue
-  "#52c41a", // Green
-  "#fa8c16", // Orange
+  "var(--md-sys-color-primary)",
+  "var(--md-sys-color-secondary)",
+  "var(--md-sys-color-tertiary)",
   "#722ed1", // Purple
   "#eb2f96", // Pink
   "#13c2c2", // Cyan
@@ -140,21 +140,16 @@ export const Comparison = () => {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "16px",
-        }}
-      >
+      {/* Page Header */}
+      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <Title level={2}>
-            <CompareOutlined /> Device Comparison
-          </Title>
-          <Text type="secondary" style={{ fontSize: "16px" }}>
+          <h1 className="page-header-title">
+            <SwapOutlined style={{ marginRight: 12 }} />
+            Device Comparison
+          </h1>
+          <p className="page-header-description">
             Compare performance metrics across multiple devices
-          </Text>
+          </p>
         </div>
 
         {selectedDevices.length >= 2 && (
@@ -162,16 +157,17 @@ export const Comparison = () => {
             type="primary"
             icon={<DownloadOutlined />}
             onClick={handleExportComparison}
+            size="large"
           >
             Export Comparison
           </Button>
         )}
       </div>
 
-      <Divider />
+      <Divider style={{ margin: "24px 0" }} />
 
       {/* Controls */}
-      <Card style={{ marginBottom: "24px" }}>
+      <MaterialCard elevation={1} style={{ marginBottom: 24 }}>
         <Row gutter={[16, 16]}>
           <Col xs={24} md={16}>
             <Space direction="vertical" style={{ width: "100%" }}>
@@ -193,7 +189,7 @@ export const Comparison = () => {
                   </Option>
                 ))}
               </Select>
-              <Text type="secondary" style={{ fontSize: "12px" }}>
+              <Text type="secondary" style={{ fontSize: 12 }}>
                 Select up to 6 devices for comparison
               </Text>
             </Space>
@@ -213,9 +209,9 @@ export const Comparison = () => {
 
         {/* Selected Devices */}
         {selectedDevices.length > 0 && (
-          <div style={{ marginTop: "16px" }}>
+          <div style={{ marginTop: 16 }}>
             <Text strong>Selected Devices ({selectedDevices.length}):</Text>
-            <div style={{ marginTop: "8px" }}>
+            <div style={{ marginTop: 8 }}>
               <Space wrap>
                 {selectedDevices.map((device) => (
                   <Tag
@@ -224,7 +220,7 @@ export const Comparison = () => {
                     closable
                     onClose={() => handleRemoveDevice(device.id)}
                     icon={<CloseCircleOutlined />}
-                    style={{ padding: "4px 8px", fontSize: "14px" }}
+                    style={{ padding: "4px 8px", fontSize: 14 }}
                   >
                     {device.name}
                   </Tag>
@@ -244,7 +240,7 @@ export const Comparison = () => {
             }
             type="info"
             showIcon={false}
-            style={{ marginTop: "16px" }}
+            style={{ marginTop: 16 }}
           />
         )}
 
@@ -253,10 +249,10 @@ export const Comparison = () => {
             message="Add at least one more device to see comparison charts"
             type="warning"
             showIcon
-            style={{ marginTop: "16px" }}
+            style={{ marginTop: 16 }}
           />
         )}
-      </Card>
+      </MaterialCard>
 
       {/* Comparison Charts */}
       {selectedDevices.length >= 2 ? (
@@ -302,7 +298,7 @@ export const Comparison = () => {
           </Col>
         </Row>
       ) : selectedDevices.length === 1 ? (
-        <Card>
+        <MaterialCard elevation={1}>
           <Empty
             description={
               <span>
@@ -314,9 +310,9 @@ export const Comparison = () => {
             }
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
-        </Card>
+        </MaterialCard>
       ) : (
-        <Card>
+        <MaterialCard elevation={1}>
           <Empty
             description={
               <span>
@@ -327,12 +323,8 @@ export const Comparison = () => {
               </span>
             }
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-          >
-            <Button type="primary" icon={<PlusOutlined />} disabled>
-              Add Device
-            </Button>
-          </Empty>
-        </Card>
+          />
+        </MaterialCard>
       )}
     </div>
   );

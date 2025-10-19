@@ -3,14 +3,18 @@
  * Analyze relationships between different metrics
  */
 
+import { MaterialCard } from "@/components/MaterialCard";
 import { TimeRangeSelector } from "@/components/TimeRangeSelector";
 import { CorrelationScatterPlot } from "@/components/charts/CorrelationScatterPlot";
 import { useDeviceMetrics, useDevices } from "@/hooks/useDevices";
 import type { Device } from "@/types/device";
-import { DownloadOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  FundProjectionScreenOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
 import {
   Button,
-  Card,
   Col,
   message,
   Row,
@@ -21,7 +25,7 @@ import {
 import dayjs from "dayjs";
 import { useState } from "react";
 
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 const { Option } = Select;
 
 interface TimeRange {
@@ -134,15 +138,21 @@ export default function Correlation() {
 
   return (
     <div>
-      <Title level={2}>Correlation Analysis</Title>
-      <Paragraph>
-        Analyze relationships between different metrics to discover patterns and
-        dependencies. A strong correlation indicates that two metrics tend to
-        change together.
-      </Paragraph>
+      {/* Page Header */}
+      <div className="page-header">
+        <h1 className="page-header-title">
+          <FundProjectionScreenOutlined style={{ marginRight: 12 }} />
+          Correlation Analysis
+        </h1>
+        <p className="page-header-description">
+          Analyze relationships between different metrics to discover patterns
+          and dependencies. A strong correlation indicates that two metrics
+          tend to change together.
+        </p>
+      </div>
 
       {/* Controls */}
-      <Card style={{ marginBottom: "24px" }}>
+      <MaterialCard elevation={1} style={{ marginBottom: 24 }}>
         <Space direction="vertical" style={{ width: "100%" }} size="large">
           {/* Device Selection */}
           <Row gutter={16} align="middle">
@@ -250,7 +260,7 @@ export default function Correlation() {
             </Col>
           </Row>
         </Space>
-      </Card>
+      </MaterialCard>
 
       {/* Correlation Plot */}
       {selectedDevice ? (
@@ -268,21 +278,25 @@ export default function Correlation() {
           error={metricsQuery.error}
         />
       ) : (
-        <Card>
+        <MaterialCard elevation={1}>
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
-            <Text type="secondary" style={{ fontSize: "16px" }}>
+            <Text type="secondary" style={{ fontSize: 16 }}>
               Select a device and time range to begin correlation analysis
             </Text>
           </div>
-        </Card>
+        </MaterialCard>
       )}
 
       {/* Information Card */}
-      <Card title="Understanding Correlation" style={{ marginTop: "24px" }}>
+      <MaterialCard
+        title="Understanding Correlation"
+        elevation={1}
+        style={{ marginTop: 24 }}
+      >
         <Space direction="vertical" size="middle">
           <div>
             <Text strong>Correlation Coefficient (r):</Text>
-            <Paragraph style={{ marginTop: "8px", marginLeft: "16px" }}>
+            <Paragraph style={{ marginTop: 8, marginLeft: 16 }}>
               • <strong>+0.9 to +1.0:</strong> Very strong positive correlation
               <br />• <strong>+0.7 to +0.9:</strong> Strong positive correlation
               <br />• <strong>+0.5 to +0.7:</strong> Moderate positive
@@ -299,7 +313,7 @@ export default function Correlation() {
           </div>
           <div>
             <Text strong>R² Value (Coefficient of Determination):</Text>
-            <Paragraph style={{ marginTop: "8px", marginLeft: "16px" }}>
+            <Paragraph style={{ marginTop: 8, marginLeft: 16 }}>
               Indicates the percentage of variance in one metric that can be
               predicted from the other metric. For example, an R² of 0.80 (80%)
               means that 80% of the variation in the Y-axis metric can be
@@ -308,7 +322,7 @@ export default function Correlation() {
           </div>
           <div>
             <Text strong>Use Cases:</Text>
-            <Paragraph style={{ marginTop: "8px", marginLeft: "16px" }}>
+            <Paragraph style={{ marginTop: 8, marginLeft: 16 }}>
               • <strong>CPU vs Memory:</strong> Identify if high CPU usage
               corresponds to high memory usage
               <br />• <strong>Network Traffic vs Client Count:</strong> See if
@@ -320,7 +334,7 @@ export default function Correlation() {
             </Paragraph>
           </div>
         </Space>
-      </Card>
+      </MaterialCard>
     </div>
   );
 }

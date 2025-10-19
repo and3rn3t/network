@@ -1,0 +1,127 @@
+/**
+ * Material Design 3 Card Styles
+ */
+
+.material-card {
+  border-radius: var(--md-sys-shape-corner-lg) !important;
+  transition: all var(--md-sys-motion-duration-medium)
+    var(--md-sys-motion-easing-standard);
+  overflow: hidden;
+}
+
+/* Variants */
+.material-card-elevated {
+  background-color: var(--md-sys-color-surface);
+  border: none !important;
+}
+
+.material-card-filled {
+  background-color: var(--md-sys-color-surface-variant);
+  border: none !important;
+}
+
+.material-card-outlined {
+  background-color: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline) !important;
+  box-shadow: none !important;
+}
+
+/* Elevation levels */
+.material-card-elevation-0 {
+  box-shadow: none !important;
+}
+
+.material-card-elevation-1 {
+  box-shadow: var(--md-sys-elevation-1) !important;
+}
+
+.material-card-elevation-2 {
+  box-shadow: var(--md-sys-elevation-2) !important;
+}
+
+.material-card-elevation-3 {
+  box-shadow: var(--md-sys-elevation-3) !important;
+}
+
+.material-card-elevation-4 {
+  box-shadow: 0px 6px 10px 4px rgba(0, 0, 0, 0.15),
+    0px 2px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.material-card-elevation-5 {
+  box-shadow: 0px 8px 12px 6px rgba(0, 0, 0, 0.15),
+    0px 4px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Hover effect for elevated cards */
+.material-card-elevated:hover {
+  box-shadow: var(--md-sys-elevation-2) !important;
+  transform: translateY(-2px);
+}
+
+.material-card-elevation-2:hover,
+.material-card-elevation-3:hover {
+  box-shadow: var(--md-sys-elevation-3) !important;
+  transform: translateY(-2px);
+}
+
+/* Card header */
+.material-card .ant-card-head {
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-xl);
+}
+
+.material-card .ant-card-head-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: -0.01em;
+}
+
+/* Card body */
+.material-card .ant-card-body {
+  padding: var(--md-sys-spacing-xl);
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Card meta */
+.material-card .ant-card-meta-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: var(--md-sys-spacing-xs);
+}
+
+.material-card .ant-card-meta-description {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.5;
+}
+
+/* Actions */
+.material-card .ant-card-actions {
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  background-color: transparent;
+}
+
+.material-card .ant-card-actions > li {
+  margin: var(--md-sys-spacing-sm) 0;
+}
+
+/* Compact variant */
+.material-card.material-card-compact .ant-card-body {
+  padding: var(--md-sys-spacing-md);
+}
+
+/* Grid layout support */
+.material-card-grid {
+  display: grid;
+  gap: var(--md-sys-spacing-lg);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+@media (max-width: 768px) {
+  .material-card-grid {
+    grid-template-columns: 1fr;
+  }
+}

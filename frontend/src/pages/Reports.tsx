@@ -2,24 +2,29 @@
  * Reports page - Data export and custom reports
  */
 
+import { MaterialCard } from "@/components/MaterialCard";
 import { ExportOutlined } from "@ant-design/icons";
-import { Card, Space, Typography } from "antd";
+import { Space, Typography } from "antd";
 import React from "react";
 
-const { Title, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 const Reports: React.FC = () => {
   return (
     <div>
-      <Title level={2}>
-        <ExportOutlined /> Reports & Data Export
-      </Title>
-      <Paragraph type="secondary">
-        Generate custom reports and export data for external analysis
-      </Paragraph>
+      {/* Page Header */}
+      <div className="page-header">
+        <h1 className="page-header-title">
+          <ExportOutlined style={{ marginRight: 12 }} />
+          Reports & Data Export
+        </h1>
+        <p className="page-header-description">
+          Generate custom reports and export data for external analysis
+        </p>
+      </div>
 
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        <Card title="📄 Custom Report Builder">
+        <MaterialCard title="📄 Custom Report Builder" elevation={1}>
           <Paragraph>
             <strong>Coming in Phase 5.6:</strong>
           </Paragraph>
@@ -29,9 +34,9 @@ const Reports: React.FC = () => {
             <li>Scheduled report generation</li>
             <li>Report templates library</li>
           </ul>
-        </Card>
+        </MaterialCard>
 
-        <Card title="📊 Data Liberation">
+        <MaterialCard title="📊 Data Liberation" elevation={1}>
           <Paragraph>
             <strong>Your data, your way:</strong>
           </Paragraph>
@@ -41,9 +46,9 @@ const Reports: React.FC = () => {
             <li>API access for programmatic data retrieval</li>
             <li>Integration with external tools (Excel, Tableau, etc.)</li>
           </ul>
-        </Card>
+        </MaterialCard>
 
-        <Card title="⏰ Scheduled Reports">
+        <MaterialCard title="⏰ Scheduled Reports" elevation={1}>
           <Paragraph>
             <strong>Automation:</strong>
           </Paragraph>
@@ -53,7 +58,7 @@ const Reports: React.FC = () => {
             <li>Executive summary templates</li>
             <li>SLA compliance reports</li>
           </ul>
-        </Card>
+        </MaterialCard>
       </Space>
     </div>
   );

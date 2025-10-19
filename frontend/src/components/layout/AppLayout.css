@@ -1,0 +1,244 @@
+/**
+ * Material Design 3 App Layout Styles
+ */
+
+/* Main Layout */
+.app-layout {
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.app-sider {
+  background: var(--md-sys-color-surface) !important;
+  border-right: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+/* Logo Section */
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-md);
+  padding: var(--md-sys-spacing-lg);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background: linear-gradient(
+    135deg,
+    var(--md-sys-color-primary) 0%,
+    var(--md-sys-color-secondary) 100%
+  );
+}
+
+.app-logo-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.app-logo-text {
+  flex: 1;
+}
+
+.app-logo-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.app-logo-subtitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* Menu */
+.app-menu {
+  padding: var(--md-sys-spacing-sm);
+  background: transparent !important;
+}
+
+.app-menu .ant-menu-item {
+  border-radius: var(--md-sys-shape-corner-md) !important;
+  margin-bottom: var(--md-sys-spacing-xs) !important;
+  padding: 12px var(--md-sys-spacing-md) !important;
+  height: auto !important;
+  line-height: 1.5 !important;
+  transition: all var(--md-sys-motion-duration-short)
+    var(--md-sys-motion-easing-standard);
+}
+
+.app-menu .ant-menu-item a {
+  color: var(--md-sys-color-on-surface);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  letter-spacing: 0.01em;
+}
+
+.app-menu .ant-menu-item-selected {
+  background-color: var(--md-sys-color-primary-container) !important;
+}
+
+.app-menu .ant-menu-item-selected a {
+  color: var(--md-sys-color-on-primary-container) !important;
+}
+
+.app-menu .ant-menu-item:hover:not(.ant-menu-item-selected) {
+  background-color: rgba(30, 136, 229, 0.08) !important;
+}
+
+.app-menu .ant-menu-item .anticon {
+  font-size: 1.25rem;
+  margin-inline-end: 12px;
+}
+
+/* Header */
+.app-header {
+  background: var(--md-sys-color-surface) !important;
+  padding: 0 var(--md-sys-spacing-xl) !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--md-sys-elevation-1) !important;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  height: 80px !important;
+}
+
+.app-header-title {
+  flex: 1;
+}
+
+.app-header-text {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.app-header-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--md-sys-color-on-surface-variant);
+  letter-spacing: 0.01em;
+}
+
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+}
+
+.app-header-actions .ant-btn {
+  border-radius: var(--md-sys-shape-corner-md);
+  height: 44px;
+  transition: all var(--md-sys-motion-duration-short)
+    var(--md-sys-motion-easing-standard);
+}
+
+.app-header-actions .ant-btn:hover {
+  background-color: rgba(30, 136, 229, 0.08);
+}
+
+.app-header-user-button {
+  display: flex !important;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  padding: 8px 16px !important;
+}
+
+.app-header-username {
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.9375rem;
+}
+
+/* Content */
+.app-content {
+  margin: var(--md-sys-spacing-lg);
+  padding: var(--md-sys-spacing-xl);
+  background: var(--md-sys-color-surface);
+  min-height: 280px;
+  border-radius: var(--md-sys-shape-corner-lg);
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+/* Footer */
+.app-footer {
+  background: var(--md-sys-color-surface) !important;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-xxl) !important;
+}
+
+.app-footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--md-sys-spacing-md);
+  flex-wrap: wrap;
+}
+
+.app-footer-text {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 500;
+}
+
+.app-footer-divider {
+  color: var(--md-sys-color-outline);
+}
+
+.app-footer-tagline {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 400;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .app-sider {
+    width: 240px !important;
+  }
+
+  .app-header {
+    padding: 0 var(--md-sys-spacing-lg) !important;
+  }
+
+  .app-content {
+    margin: var(--md-sys-spacing-md);
+    padding: var(--md-sys-spacing-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header-text {
+    font-size: 1.25rem;
+  }
+
+  .app-header-subtitle {
+    display: none;
+  }
+
+  .app-header-username {
+    display: none;
+  }
+
+  .app-footer-content {
+    flex-direction: column;
+    gap: var(--md-sys-spacing-xs);
+  }
+
+  .app-footer-divider {
+    display: none;
+  }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  /* Dark mode overrides can be added here if needed */
+}

@@ -1,5 +1,5 @@
 /**
- * Main application layout with navigation
+ * Main application layout with navigation - Material Design 3
  */
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,12 +10,16 @@ import {
   DotChartOutlined,
   ExportOutlined,
   LineChartOutlined,
+  LogoutOutlined,
   SettingOutlined,
   SwapOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
+import type { MenuProps } from "antd";
+import { Avatar, Badge, Button, Dropdown, Layout, Menu } from "antd";
 import React from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import "./AppLayout.css";
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -52,7 +56,11 @@ export const AppLayout: React.FC = () => {
     {
       key: "/alerts",
       icon: <BellOutlined />,
-      label: <Link to="/alerts">Alert Intelligence</Link>,
+      label: (
+        <Badge count={0} offset={[10, 0]}>
+          <Link to="/alerts">Alert Intelligence</Link>
+        </Badge>
+      ),
     },
     {
       key: "/reports",
@@ -66,22 +74,39 @@ export const AppLayout: React.FC = () => {
     },
   ];
 
+  const userMenuItems: MenuProps["items"] = [
+    {
+      key: "profile",
+      icon: <UserOutlined />,
+      label: "Profile",
+      disabled: true,
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Logout",
+      onClick: () => {
+        void logout();
+      },
+      danger: true,
+    },
+  ];
+
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider theme="dark" width={250}>
-        <div
-          style={{
-            color: "white",
-            padding: "20px",
-            fontSize: "20px",
-            fontWeight: "bold",
-            textAlign: "center",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-          }}
-        >
-          📊 UniFi Insights
+    <Layout className="app-layout">
+      <Sider className="app-sider" theme="dark" width={280}>
+        <div className="app-logo">
+          <div className="app-logo-icon">📊</div>
+          <div className="app-logo-text">
+            <div className="app-logo-title">UniFi Insights</div>
+            <div className="app-logo-subtitle">Network Analytics</div>
+          </div>
         </div>
         <Menu
+          className="app-menu"
           theme="dark"
           mode="inline"
           selectedKeys={[location.pathname]}
@@ -89,42 +114,45 @@ export const AppLayout: React.FC = () => {
         />
       </Sider>
       <Layout>
-        <Header
-          style={{
-            background: "#fff",
-            padding: "0 24px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h2 style={{ margin: 0, fontSize: "18px", color: "#1890ff" }}>
-            Historical Analysis & Insights Platform
-          </h2>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span style={{ color: "#666" }}>
-              Welcome, <strong>{user?.username}</strong>
-            </span>
-            <a onClick={logout} style={{ cursor: "pointer", color: "#1890ff" }}>
-              Logout
-            </a>
+        <Header className="app-header">
+          <div className="app-header-title">
+            <h1 className="app-header-text">Historical Analysis & Insights</h1>
+            <p className="app-header-subtitle">
+              Deep network analytics and trend analysis
+            </p>
+          </div>
+          <div className="app-header-actions">
+            <Button type="text" icon={<BellOutlined />} size="large">
+              <Badge count={0} offset={[0, 0]} />
+            </Button>
+            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+              <Button
+                type="text"
+                size="large"
+                className="app-header-user-button"
+              >
+                <Avatar
+                  icon={<UserOutlined />}
+                  style={{
+                    backgroundColor: "var(--md-sys-color-primary)",
+                  }}
+                />
+                <span className="app-header-username">{user?.username}</span>
+              </Button>
+            </Dropdown>
           </div>
         </Header>
-        <Content
-          style={{
-            margin: "24px",
-            padding: 24,
-            background: "#fff",
-            minHeight: 280,
-            borderRadius: "8px",
-          }}
-        >
+        <Content className="app-content">
           <Outlet />
         </Content>
-        <Footer style={{ textAlign: "center", color: "#666" }}>
-          UniFi Network Insights Platform ©{new Date().getFullYear()} |
-          Complement to UniFi App
+        <Footer className="app-footer">
+          <div className="app-footer-content">
+            <span className="app-footer-text">
+              UniFi Network Insights Platform ©{new Date().getFullYear()}
+            </span>
+            <span className="app-footer-divider">•</span>
+            <span className="app-footer-tagline">Complement to UniFi App</span>
+          </div>
         </Footer>
       </Layout>
     </Layout>

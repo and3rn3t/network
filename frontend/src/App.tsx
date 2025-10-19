@@ -1,11 +1,13 @@
 /**
- * Main App component with routing
+ * Main App component with routing and Material Design 3 theming
  */
 
 import { AppLayout } from "@/components/layout/AppLayout";
+import { LoadingFallback } from "@/components/LoadingFallback";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { materialTheme } from "@/theme/material-theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ConfigProvider, Spin } from "antd";
+import { ConfigProvider } from "antd";
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
@@ -31,20 +33,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Loading fallback
-const LoadingFallback = () => (
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh",
-    }}
-  >
-    <Spin size="large" tip="Loading..." />
-  </div>
-);
-
 // Protected route wrapper
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -60,13 +48,7 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
 
 function App() {
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#1890ff",
-        },
-      }}
-    >
+    <ConfigProvider theme={materialTheme}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <BrowserRouter>

@@ -3,24 +3,16 @@
  * Primary value proposition - historical performance trends and analysis
  */
 
+import { MaterialCard } from "@/components/MaterialCard";
 import type { TimeRange } from "@/components/TimeRangeSelector";
 import { TimeRangeSelector } from "@/components/TimeRangeSelector";
 import { DevicePerformanceChart } from "@/components/charts/DevicePerformanceChart";
 import { useDeviceMetrics, useDevices } from "@/hooks/useDevices";
 import { InfoCircleOutlined, LineChartOutlined } from "@ant-design/icons";
-import {
-  Alert,
-  Card,
-  Col,
-  Divider,
-  Row,
-  Select,
-  Space,
-  Typography,
-} from "antd";
+import { Alert, Col, Divider, Row, Select, Space, Typography } from "antd";
 import { useState } from "react";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 
 export const Historical = () => {
@@ -55,17 +47,21 @@ export const Historical = () => {
 
   return (
     <div>
-      <Title level={2}>
-        <LineChartOutlined /> Historical Analysis
-      </Title>
-      <Text type="secondary" style={{ fontSize: "16px" }}>
-        Analyze device performance trends over time
-      </Text>
+      {/* Page Header */}
+      <div className="page-header">
+        <h1 className="page-header-title">
+          <LineChartOutlined style={{ marginRight: 12 }} />
+          Historical Analysis
+        </h1>
+        <p className="page-header-description">
+          Analyze device performance trends over time
+        </p>
+      </div>
 
-      <Divider />
+      <Divider style={{ margin: "24px 0" }} />
 
       {/* Controls */}
-      <Card style={{ marginBottom: "24px" }}>
+      <MaterialCard elevation={1} style={{ marginBottom: 24 }}>
         <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Space direction="vertical" style={{ width: "100%" }}>
@@ -111,10 +107,10 @@ export const Historical = () => {
             }
             type="info"
             showIcon={false}
-            style={{ marginTop: "16px" }}
+            style={{ marginTop: 16 }}
           />
         )}
-      </Card>
+      </MaterialCard>
 
       {/* Performance Charts */}
       {selectedDeviceId ? (
@@ -126,7 +122,7 @@ export const Historical = () => {
               error={metricsError}
               metricType="cpu_usage"
               title="CPU Usage Over Time"
-              color="#1890ff"
+              color="var(--md-sys-color-primary)"
               unit="%"
             />
           </Col>
@@ -138,7 +134,7 @@ export const Historical = () => {
               error={metricsError}
               metricType="memory_usage"
               title="Memory Usage Over Time"
-              color="#52c41a"
+              color="var(--md-sys-color-success)"
               unit="%"
             />
           </Col>
@@ -150,13 +146,13 @@ export const Historical = () => {
               error={metricsError}
               metricType="temperature"
               title="Temperature Over Time"
-              color="#fa8c16"
+              color="var(--md-sys-color-warning)"
               unit="°C"
             />
           </Col>
         </Row>
       ) : (
-        <Card>
+        <MaterialCard elevation={1}>
           <Alert
             message="No Device Selected"
             description="Please select a device from the dropdown above to view historical performance data."
@@ -164,7 +160,7 @@ export const Historical = () => {
             showIcon
             icon={<InfoCircleOutlined />}
           />
-        </Card>
+        </MaterialCard>
       )}
     </div>
   );

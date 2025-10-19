@@ -1,42 +1,263 @@
+/**
+ * Material Design 3 App Styles
+ * Main application styles following Material You guidelines
+ */
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Global Material Design 3 enhancements */
+
+/* Smooth transitions for route changes */
+.page-enter {
+  opacity: 0;
+  transform: translateY(8px);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all var(--md-sys-motion-duration-medium)
+    var(--md-sys-motion-easing-standard);
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity var(--md-sys-motion-duration-short)
+    var(--md-sys-motion-easing-standard);
+}
+
+/* Enhanced focus states for accessibility */
+.ant-btn:focus-visible,
+.ant-input:focus-visible,
+.ant-select:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+/* Custom Ant Design overrides for Material Design 3 */
+.ant-btn-primary {
+  background: var(--md-sys-color-primary) !important;
+  border-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.ant-btn-primary:hover {
+  background: var(--md-sys-color-primary-container) !important;
+  color: var(--md-sys-color-on-primary-container) !important;
+}
+
+.ant-btn-default {
+  border-color: var(--md-sys-color-outline) !important;
+  color: var(--md-sys-color-primary) !important;
+}
+
+.ant-btn-default:hover {
+  border-color: var(--md-sys-color-primary) !important;
+  background: rgba(30, 136, 229, 0.08) !important;
+}
+
+/* Table enhancements */
+.ant-table {
+  border-radius: var(--md-sys-shape-corner-lg);
+  overflow: hidden;
+}
+
+.ant-table-thead > tr > th {
+  background: var(--md-sys-color-surface-variant) !important;
+  color: var(--md-sys-color-on-surface) !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: rgba(30, 136, 229, 0.04) !important;
+}
+
+/* Modal enhancements */
+.ant-modal-content {
+  border-radius: var(--md-sys-shape-corner-xl) !important;
+  box-shadow: var(--md-sys-elevation-3) !important;
+}
+
+.ant-modal-header {
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-xl);
+}
+
+.ant-modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: -0.01em;
+}
+
+.ant-modal-body {
+  padding: var(--md-sys-spacing-xl);
+}
+
+/* Form enhancements */
+.ant-form-item-label > label {
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: 0.01em;
+}
+
+.ant-input,
+.ant-select-selector {
+  border-radius: var(--md-sys-shape-corner-md) !important;
+  border-color: var(--md-sys-color-outline) !important;
+  transition: all var(--md-sys-motion-duration-short)
+    var(--md-sys-motion-easing-standard);
+}
+
+.ant-input:focus,
+.ant-input:hover,
+.ant-select-focused .ant-select-selector {
+  border-color: var(--md-sys-color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.1) !important;
+}
+
+/* Alert enhancements */
+.ant-alert {
+  border-radius: var(--md-sys-shape-corner-md) !important;
+  border: none !important;
+}
+
+.ant-alert-success {
+  background-color: var(--md-sys-color-success-container, #e8f5e9) !important;
+  color: var(--md-sys-color-on-success-container, #1b5e20) !important;
+}
+
+.ant-alert-error {
+  background-color: var(--md-sys-color-error-container) !important;
+  color: var(--md-sys-color-on-error-container) !important;
+}
+
+.ant-alert-warning {
+  background-color: var(--md-sys-color-warning-container, #fff3e0) !important;
+  color: var(--md-sys-color-on-warning-container, #e65100) !important;
+}
+
+.ant-alert-info {
+  background-color: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+}
+
+/* Tag enhancements */
+.ant-tag {
+  border-radius: var(--md-sys-shape-corner-sm) !important;
+  border: none !important;
+  padding: 4px 12px !important;
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+/* Badge enhancements */
+.ant-badge-count {
+  background-color: var(--md-sys-color-error) !important;
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+/* Statistic enhancements */
+.ant-statistic-title {
+  color: var(--md-sys-color-on-surface-variant) !important;
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ant-statistic-content {
+  color: var(--md-sys-color-on-surface) !important;
+  font-weight: 600;
+  font-feature-settings: "tnum";
+}
+
+/* Divider enhancements */
+.ant-divider {
+  border-color: var(--md-sys-color-outline-variant) !important;
+}
+
+/* Loading states */
+.ant-spin {
+  color: var(--md-sys-color-primary) !important;
+}
+
+/* Tooltip enhancements */
+.ant-tooltip-inner {
+  background-color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface);
+  border-radius: var(--md-sys-shape-corner-sm);
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+/* Dropdown enhancements */
+.ant-dropdown {
+  border-radius: var(--md-sys-shape-corner-md) !important;
+  box-shadow: var(--md-sys-elevation-2) !important;
+}
+
+.ant-dropdown-menu {
+  border-radius: var(--md-sys-shape-corner-md) !important;
+  padding: var(--md-sys-spacing-xs);
+}
+
+.ant-dropdown-menu-item {
+  border-radius: var(--md-sys-shape-corner-sm) !important;
+  margin: 2px 0;
+  transition: all var(--md-sys-motion-duration-short)
+    var(--md-sys-motion-easing-standard);
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: rgba(30, 136, 229, 0.08) !important;
+}
+
+/* Page header styles */
+.page-header {
+  margin-bottom: var(--md-sys-spacing-xl);
+}
+
+.page-header-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--md-sys-spacing-xs);
+}
+
+.page-header-description {
+  font-size: 1rem;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.5;
+}
+
+/* Print styles */
+@media print {
+  .no-print,
+  .ant-layout-sider,
+  .ant-layout-header,
+  .ant-layout-footer {
+    display: none !important;
   }
-  to {
-    transform: rotate(360deg);
+
+  .app-content {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

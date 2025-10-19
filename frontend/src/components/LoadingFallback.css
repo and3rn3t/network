@@ -1,0 +1,18 @@
+.loading-fallback {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--md-sys-color-background);
+}
+
+.loading-fallback .ant-spin {
+  color: var(--md-sys-color-primary);
+}
+
+.loading-fallback .ant-spin-text {
+  color: var(--md-sys-color-on-background);
+  margin-top: var(--md-sys-spacing-md);
+  font-size: 1rem;
+  font-weight: 500;
+}
