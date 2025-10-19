@@ -2,7 +2,7 @@
 
 import requests
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8888"
 
 print("\n🔐 Testing Login...")
 print("=" * 50)

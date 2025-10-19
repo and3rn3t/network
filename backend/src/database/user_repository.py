@@ -6,7 +6,8 @@ from pathlib import Path
 from typing import Optional
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 from src.database.database import Database
 
@@ -80,6 +81,20 @@ class UserRepository:
         row = self.db.fetch_one(query, (username,))
 
         if row:
+            # Parse datetime fields - handle both str and datetime objects
+            created_at = row["created_at"]
+            if isinstance(created_at, str):
+                created_at = datetime.fromisoformat(created_at)
+            elif not isinstance(created_at, datetime):
+                created_at = datetime.utcnow()
+
+            last_login = row["last_login"]
+            if last_login:
+                if isinstance(last_login, str):
+                    last_login = datetime.fromisoformat(last_login)
+                elif not isinstance(last_login, datetime):
+                    last_login = None
+
             return User(
                 id=row["id"],
                 username=row["username"],
@@ -88,12 +103,8 @@ class UserRepository:
                 hashed_password=row["hashed_password"],
                 is_active=bool(row["is_active"]),
                 is_superuser=bool(row["is_superuser"]),
-                created_at=datetime.fromisoformat(row["created_at"]),
-                last_login=(
-                    datetime.fromisoformat(row["last_login"])
-                    if row["last_login"]
-                    else None
-                ),
+                created_at=created_at,
+                last_login=last_login,
             )
         return None
 
@@ -116,6 +127,20 @@ class UserRepository:
         row = self.db.fetch_one(query, (user_id,))
 
         if row:
+            # Parse datetime fields - handle both str and datetime objects
+            created_at = row["created_at"]
+            if isinstance(created_at, str):
+                created_at = datetime.fromisoformat(created_at)
+            elif not isinstance(created_at, datetime):
+                created_at = datetime.utcnow()
+
+            last_login = row["last_login"]
+            if last_login:
+                if isinstance(last_login, str):
+                    last_login = datetime.fromisoformat(last_login)
+                elif not isinstance(last_login, datetime):
+                    last_login = None
+
             return User(
                 id=row["id"],
                 username=row["username"],
@@ -124,12 +149,8 @@ class UserRepository:
                 hashed_password=row["hashed_password"],
                 is_active=bool(row["is_active"]),
                 is_superuser=bool(row["is_superuser"]),
-                created_at=datetime.fromisoformat(row["created_at"]),
-                last_login=(
-                    datetime.fromisoformat(row["last_login"])
-                    if row["last_login"]
-                    else None
-                ),
+                created_at=created_at,
+                last_login=last_login,
             )
         return None
 

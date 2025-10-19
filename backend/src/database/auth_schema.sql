@@ -1,4 +1,4 @@
-"""User database schema SQL.""" -- Users table for authentication
+-- Users table for authentication
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -28,9 +28,9 @@ INSERT
     )
 VALUES (
         'admin',
-        'admin@unifi-monitor.local',
+        'admin@example.com',
         'System Administrator',
-        '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5aeJB8DPxVfR6',
+        '$2b$12$LsD21CmC.3ZphIO7Z6CdLOIn.mU4FgRBTuOm6aKA8Vubz7ZDhyprW',
         1,
         1
     );

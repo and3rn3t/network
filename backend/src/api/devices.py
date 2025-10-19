@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 
@@ -11,8 +11,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 from backend.src.middleware.error_handler import NotFoundError
 from backend.src.services.database_service import get_database
-from src.database.database import Database
-from src.database.repositories import HostRepository
+from backend.src.database.database import Database
+from backend.src.database.repositories import HostRepository
 
 router = APIRouter()
 

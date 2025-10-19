@@ -53,7 +53,8 @@ class Database:
         if self._connection is None:
             self._connection = sqlite3.connect(
                 str(self.db_path),
-                detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES,
+                # Don't auto-parse timestamps - handle manually for NULL safety
+                detect_types=0,
             )
             # Enable row factory for dict-like access
             self._connection.row_factory = sqlite3.Row
