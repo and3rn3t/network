@@ -5,6 +5,12 @@
 /* Main Layout */
 .app-layout {
   min-height: 100vh;
+  background: var(--md-sys-color-background) !important;
+}
+
+/* Layout content wrapper (Ant Design component) */
+.app-layout .ant-layout {
+  background: var(--md-sys-color-background) !important;
 }
 
 /* Sidebar */
@@ -171,7 +177,7 @@
 .app-content {
   margin: var(--md-sys-spacing-lg);
   padding: var(--md-sys-spacing-xl);
-  background: var(--md-sys-color-surface);
+  background: var(--md-sys-color-surface) !important;
   min-height: 280px;
   border-radius: var(--md-sys-shape-corner-lg);
   box-shadow: var(--md-sys-elevation-1);

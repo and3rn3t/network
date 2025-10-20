@@ -12,6 +12,33 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <title>UniFi Network Insights - Historical Analysis Platform</title>
+
+    <!-- Theme initialization script (runs before page render to prevent FOUC) -->
+    <script>
+      (function() {
+        // Add preload class immediately to prevent transitions on initial load
+        document.documentElement.classList.add('preload');
+
+        // Get stored theme preference
+        const THEME_KEY = 'unifi_monitor_theme';
+        const stored = localStorage.getItem(THEME_KEY);
+
+        // Determine effective theme
+        let effectiveTheme = 'light';
+
+        if (stored === 'dark') {
+          effectiveTheme = 'dark';
+        } else if (stored === 'system' || !stored) {
+          // Check system preference
+          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            effectiveTheme = 'dark';
+          }
+        }
+
+        // Apply theme immediately (before React loads)
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

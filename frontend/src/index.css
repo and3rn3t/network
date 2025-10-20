@@ -108,6 +108,12 @@
   --spacing-lg: var(--md-sys-spacing-lg);
   --spacing-xl: var(--md-sys-spacing-xl);
   --spacing-xxl: var(--md-sys-spacing-xxl);
+
+  /* Smooth theme transitions */
+  transition: background-color var(--md-sys-motion-duration-medium)
+      var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-medium)
+      var(--md-sys-motion-easing-standard);
 }
 
 /* Dark Theme - Material Design 3 Dark Color System */
@@ -280,6 +286,47 @@ body {
   color: var(--md-sys-color-on-background);
   background-color: var(--md-sys-color-background);
   overflow-x: hidden;
+}
+
+/* Theme Transition Animations */
+
+/* Apply transitions to all themed elements */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke,
+    box-shadow;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Prevent transitions on initial load (FOUC prevention) */
+.preload * {
+  transition: none !important;
+}
+
+/* Preserve important transitions that should not be overridden */
+.ant-spin,
+.ant-skeleton,
+[class*="animate-"],
+[class*="transition-"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Preserve chart and graph animations */
+canvas,
+svg {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ensure smooth theme switching without affecting hover/active states */
+a,
+button {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Typography styles matching Material Design 3 type scale */

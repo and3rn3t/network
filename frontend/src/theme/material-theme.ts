@@ -438,4 +438,14 @@ export const materialDarkTheme: ThemeConfig = {
     colorTextSecondary: "#CAC4D0",
     colorTextTertiary: "#938F99",
   },
+  components: {
+    ...materialTheme.components,
+    Layout: {
+      ...materialTheme.components?.Layout,
+      headerBg: "#1C1B1F",
+      siderBg: "#1C1B1F",
+      bodyBg: "#141218",
+      footerBg: "#1C1B1F",
+    },
+  },
 };

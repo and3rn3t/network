@@ -62,6 +62,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     getEffectiveTheme(getStoredTheme())
   );
 
+  // Prevent FOUC on initial load
+  useEffect(() => {
+    // Add preload class to prevent transitions on initial load
+    document.documentElement.classList.add("preload");
+
+    // Remove preload class after next frame to enable transitions
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove("preload");
+      });
+    });
+  }, []);
+
   // Apply theme to document
   useEffect(() => {
     const effective = getEffectiveTheme(theme);
