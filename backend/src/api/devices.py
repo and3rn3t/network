@@ -86,52 +86,80 @@ async def list_devices(
     db: Database = Depends(get_database),
 ):
     """
-    List all network devices.
+    List all network devices from UniFi controller.
 
     Returns paginated list of devices with optional filtering.
     """
-    # Build query with filters
-    # Note: network.db uses different column names than expected
-    query = "SELECT id, mac_address, name, model, type, ip_address, 'unknown' as status, firmware_version, 0 as uptime, last_seen FROM hosts WHERE 1=1"
+    # Query from unifi_devices table (real data)
+    query = """
+        SELECT
+            d.id,
+            d.mac,
+            d.name,
+            d.model,
+            d.type,
+            d.ip,
+            COALESCE(ds.state, 'unknown') as status,
+            d.version,
+            COALESCE(ds.uptime, 0) as uptime,
+            d.last_seen,
+            d.site_name
+        FROM unifi_devices d
+        LEFT JOIN unifi_device_status ds ON d.mac = ds.device_mac
+            AND ds.recorded_at = (
+                SELECT MAX(recorded_at) FROM unifi_device_status WHERE device_mac = d.mac
+            )
+        WHERE 1=1
+    """
     params = []
 
     if model:
-        query += " AND model LIKE ?"
+        query += " AND d.model LIKE ?"
         params.append(f"%{model}%")
 
+    if status:
+        query += " AND ds.state = ?"
+        params.append(status)
+
     # Get total count
-    count_query = "SELECT COUNT(*) FROM hosts WHERE 1=1"
+    count_query = "SELECT COUNT(*) FROM unifi_devices d WHERE 1=1"
     count_params = []
     if model:
-        count_query += " AND model LIKE ?"
+        count_query += " AND d.model LIKE ?"
         count_params.append(f"%{model}%")
 
-    cursor = db.execute(count_query, tuple(count_params) if count_params else None)
+    if count_params:
+        cursor = db.execute(count_query, tuple(count_params))
+    else:
+        cursor = db.execute(count_query)
     total = cursor.fetchone()[0]
 
     # Add pagination
     query += f" LIMIT {limit} OFFSET {offset}"
 
     # Execute query
-    cursor = db.execute(query, tuple(params) if params else None)
+    if params:
+        cursor = db.execute(query, tuple(params))
+    else:
+        cursor = db.execute(query)
     rows = cursor.fetchall()
 
     # Convert to dict format
     devices = [
         {
-            "id": i,  # Use index as numeric ID since db uses TEXT id
+            "id": row[0],
             "mac": row[1],
             "name": row[2] or "Unknown",
             "model": row[3],
             "type": row[4],
             "ip": row[5],
-            "status": "online",  # Default to online since we don't have status
+            "status": row[6] if row[6] in ["online", "offline"] else "online",
             "version": row[7],
             "uptime": row[8],
             "last_seen": row[9],
-            "site_id": None,
+            "site_name": row[10],
         }
-        for i, row in enumerate(rows, start=1)
+        for row in rows
     ]
 
     return {

@@ -2,19 +2,67 @@
 
 import sys
 from datetime import datetime, timedelta
-from pathlib import Path
+from pathlib import Path as PathLib
 from typing import List, Optional
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+sys.path.insert(0, str(PathLib(__file__).parent.parent.parent.parent))
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
 from backend.src.services.database_service import get_database
 from src.database.database import Database
 
 router = APIRouter()
+
+
+# RESPONSE MODELS
+
+
+class MetricPoint(BaseModel):
+    """Single metric data point."""
+
+    timestamp: str = Field(..., description="ISO 8601 timestamp")
+    value: float = Field(..., description="Metric value")
+    unit: str = Field(..., description="Unit of measurement")
+
+
+class MetricStatistics(BaseModel):
+    """Statistical summary of metrics."""
+
+    count: int = Field(..., description="Number of data points")
+    min: float = Field(..., description="Minimum value")
+    max: float = Field(..., description="Maximum value")
+    avg: float = Field(..., description="Average value")
+    p95: Optional[float] = Field(None, description="95th percentile")
+    p99: Optional[float] = Field(None, description="99th percentile")
+    latest: Optional[float] = Field(None, description="Most recent value")
+
+
+class MetricTimeSeries(BaseModel):
+    """Time series data for a metric."""
+
+    metric_name: str = Field(..., description="Metric name")
+    unit: str = Field(..., description="Unit of measurement")
+    data: List[MetricPoint] = Field(..., description="Data points")
+    statistics: MetricStatistics = Field(..., description="Statistical summary")
+
+
+class DeviceMetricsResponse(BaseModel):
+    """Response for device historical metrics."""
+
+    device_mac: str = Field(..., description="Device MAC address")
+    device_name: Optional[str] = Field(None, description="Device name")
+    time_range: str = Field(..., description="Time range queried")
+    metrics: List[MetricTimeSeries] = Field(..., description="Metrics data")
+
+
+class MultiDeviceMetricsResponse(BaseModel):
+    """Response for multi-device comparison."""
+
+    time_range: str = Field(..., description="Time range queried")
+    devices: List[DeviceMetricsResponse] = Field(..., description="Device metrics")
 
 
 # CLIENT METRICS ENDPOINTS (Primary Focus)
@@ -26,7 +74,7 @@ router = APIRouter()
     summary="Get historical client metrics",
 )
 async def get_client_historical_metrics(
-    client_mac: str = Field(..., description="Client MAC address"),
+    client_mac: str = Path(..., description="Client MAC address"),
     days: int = Query(7, ge=1, le=90, description="Number of days to query"),
     metrics: Optional[str] = Query(
         None,
@@ -202,7 +250,7 @@ async def compare_client_metrics(
     summary="Export client metrics to CSV/JSON",
 )
 async def export_client_metrics(
-    client_mac: str = Field(..., description="Client MAC address"),
+    client_mac: str = Path(..., description="Client MAC address"),
     days: int = Query(7, ge=1, le=90, description="Number of days to query"),
     format: str = Query("csv", regex="^(csv|json)$", description="Export format"),
     metrics: Optional[str] = Query(None, description="Comma-separated metric names"),
@@ -251,52 +299,6 @@ async def export_client_metrics(
 
 
 # DEVICE METRICS ENDPOINTS (Infrastructure)
-
-
-# Response models
-class MetricPoint(BaseModel):
-    """Single metric data point."""
-
-    timestamp: str = Field(..., description="ISO 8601 timestamp")
-    value: float = Field(..., description="Metric value")
-    unit: str = Field(..., description="Unit of measurement")
-
-
-class MetricStatistics(BaseModel):
-    """Statistical summary of metrics."""
-
-    count: int = Field(..., description="Number of data points")
-    min: float = Field(..., description="Minimum value")
-    max: float = Field(..., description="Maximum value")
-    avg: float = Field(..., description="Average value")
-    p95: Optional[float] = Field(None, description="95th percentile")
-    p99: Optional[float] = Field(None, description="99th percentile")
-    latest: Optional[float] = Field(None, description="Most recent value")
-
-
-class MetricTimeSeries(BaseModel):
-    """Time series data for a metric."""
-
-    metric_name: str = Field(..., description="Metric name")
-    unit: str = Field(..., description="Unit of measurement")
-    data: List[MetricPoint] = Field(..., description="Data points")
-    statistics: MetricStatistics = Field(..., description="Statistical summary")
-
-
-class DeviceMetricsResponse(BaseModel):
-    """Response for device historical metrics."""
-
-    device_mac: str = Field(..., description="Device MAC address")
-    device_name: Optional[str] = Field(None, description="Device name")
-    time_range: str = Field(..., description="Time range queried")
-    metrics: List[MetricTimeSeries] = Field(..., description="Metrics data")
-
-
-class MultiDeviceMetricsResponse(BaseModel):
-    """Response for multi-device comparison."""
-
-    time_range: str = Field(..., description="Time range queried")
-    devices: List[DeviceMetricsResponse] = Field(..., description="Device metrics")
 
 
 def calculate_percentile(values: List[float], percentile: int) -> Optional[float]:
@@ -359,7 +361,7 @@ def aggregate_metrics_by_interval(
     summary="Get historical device metrics",
 )
 async def get_device_historical_metrics(
-    device_mac: str = Field(..., description="Device MAC address"),
+    device_mac: str = Path(..., description="Device MAC address"),
     days: int = Query(7, ge=1, le=90, description="Number of days to query"),
     metrics: Optional[str] = Query(
         None,
@@ -546,7 +548,7 @@ async def compare_device_metrics(
     summary="Export device metrics to CSV/JSON",
 )
 async def export_device_metrics(
-    device_mac: str = Field(..., description="Device MAC address"),
+    device_mac: str = Path(..., description="Device MAC address"),
     days: int = Query(7, ge=1, le=90, description="Number of days to query"),
     format: str = Query("csv", regex="^(csv|json)$", description="Export format"),
     metrics: Optional[str] = Query(

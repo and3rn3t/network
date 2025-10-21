@@ -10,6 +10,7 @@ import {
   useExportClientMetricsCSV,
   useExportClientMetricsJSON,
 } from "@/hooks/useHistorical";
+import type { Client } from "@/types/client";
 import {
   DownloadOutlined,
   InfoCircleOutlined,
@@ -50,6 +51,41 @@ const TIME_RANGES = [
   { value: 90, label: "Last 90 Days" },
 ];
 
+// Custom tooltip component for charts
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    unit?: string;
+    payload: {
+      formattedTime: string;
+    };
+  }>;
+}
+
+const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
+  if (active && payload?.length) {
+    return (
+      <div
+        style={{
+          backgroundColor: "var(--md-sys-color-surface-container)",
+          padding: "12px",
+          borderRadius: "8px",
+          border: "1px solid var(--md-sys-color-outline)",
+        }}
+      >
+        <Text strong style={{ display: "block", marginBottom: "8px" }}>
+          {payload[0].payload.formattedTime}
+        </Text>
+        <Text style={{ color: "var(--md-sys-color-primary)" }}>
+          {payload[0].value.toFixed(2)} {payload[0].unit || ""}
+        </Text>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const Historical = () => {
   const [selectedClientMac, setSelectedClientMac] = useState<
     string | undefined
@@ -58,7 +94,12 @@ export const Historical = () => {
 
   // Fetch clients list
   const { data: clientsResponse, isLoading: clientsLoading } = useClients();
-  const clients = clientsResponse?.clients || [];
+
+  // Memoize clients array to prevent unnecessary re-renders
+  const clients = useMemo(
+    () => clientsResponse?.clients || [],
+    [clientsResponse?.clients]
+  );
 
   // Fetch historical metrics for selected client
   const {
@@ -73,7 +114,7 @@ export const Historical = () => {
 
   // Get selected client info
   const selectedClient = useMemo(
-    () => clients.find((c) => c.mac === selectedClientMac),
+    () => clients.find((c: Client) => c.mac === selectedClientMac),
     [clients, selectedClientMac]
   );
 
@@ -81,28 +122,24 @@ export const Historical = () => {
   const chartData = useMemo(() => {
     if (!metricsData?.metrics) return {};
 
-    const result: Record<string, any[]> = {};
+    const result: Record<
+      string,
+      Array<{
+        timestamp: number;
+        value: number;
+        formattedTime: string;
+      }>
+    > = {};
 
-    metricsData.metrics.forEach((metric) => {
+    for (const metric of metricsData.metrics) {
       const dataPoints = metric.data.map((point) => ({
         timestamp: new Date(point.timestamp).getTime(),
         value: point.value,
         formattedTime: new Date(point.timestamp).toLocaleString(),
       }));
       result[metric.metric_name] = dataPoints;
-    });
+    }
 
-    return result;
-  }, [metricsData]);
-
-  // Get statistics for each metric
-  const statistics = useMemo(() => {
-    if (!metricsData?.metrics) return {};
-
-    const result: Record<string, any> = {};
-    metricsData.metrics.forEach((metric) => {
-      result[metric.metric_name] = metric.statistics;
-    });
     return result;
   }, [metricsData]);
 
@@ -136,30 +173,6 @@ export const Historical = () => {
       clientMac: selectedClientMac,
       days,
     });
-  };
-
-  // Custom tooltip for charts
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container)",
-            padding: "12px",
-            borderRadius: "8px",
-            border: "1px solid var(--md-sys-color-outline)",
-          }}
-        >
-          <Text strong style={{ display: "block", marginBottom: "8px" }}>
-            {payload[0].payload.formattedTime}
-          </Text>
-          <Text style={{ color: "var(--md-sys-color-primary)" }}>
-            {payload[0].value.toFixed(2)} {payload[0].unit}
-          </Text>
-        </div>
-      );
-    }
-    return null;
   };
 
   return (
@@ -203,7 +216,7 @@ export const Historical = () => {
                 size="large"
                 optionFilterProp="children"
               >
-                {clients.map((client) => (
+                {clients.map((client: Client) => (
                   <Option key={client.mac} value={client.mac}>
                     {client.hostname || client.name || client.mac}
                   </Option>
@@ -300,7 +313,7 @@ export const Historical = () => {
                 key: metric.metric_name,
                 label: (
                   <span style={{ textTransform: "capitalize" }}>
-                    {metric.metric_name.replace(/_/g, " ")}
+                    {metric.metric_name.replaceAll("_", " ")}
                   </span>
                 ),
                 children: (

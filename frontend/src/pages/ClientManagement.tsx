@@ -344,16 +344,6 @@ const ClientManagement: React.FC = () => {
     setBulkModalVisible(true);
   };
 
-  // Handle bulk unblock
-  const handleBulkUnblock = () => {
-    if (selectedRowKeys.length === 0) {
-      message.warning("Please select clients to unblock");
-      return;
-    }
-    setBulkOperationType("client_unblock");
-    setBulkModalVisible(true);
-  };
-
   // Get bulk operation items from selected clients
   const getBulkOperationItems = (): BulkOperationItem[] => {
     return filteredClients
@@ -364,7 +354,9 @@ const ClientManagement: React.FC = () => {
         description: `${client.ip} - ${getDeviceTypeName(client.device_type)}`,
         disabled: false,
       }));
-  }; // Handle bulk unblock
+  };
+
+  // Handle bulk unblock
   const handleBulkUnblock = async () => {
     if (selectedRowKeys.length === 0) {
       message.warning("Please select clients to unblock");

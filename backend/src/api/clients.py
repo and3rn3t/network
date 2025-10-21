@@ -100,15 +100,36 @@ async def list_clients(
     db: Database = Depends(get_database),
 ):
     """
-    List all network clients.
+    List all network clients with latest WiFi metrics.
 
-    Returns paginated list of clients with optional filtering.
+    Returns paginated list of clients with signal strength, speed, and channel data.
     """
-    # Query unifi_clients table for client list
+    # Query unifi_clients with latest status/metrics
     query = """
-        SELECT DISTINCT mac, hostname, name, ip, blocked, last_seen
-        FROM unifi_clients
-        ORDER BY last_seen DESC
+        SELECT
+            c.mac,
+            c.hostname,
+            c.name,
+            c.ip,
+            c.blocked,
+            c.last_seen,
+            c.is_wired,
+            c.channel,
+            c.essid,
+            c.ap_name,
+            s.signal,
+            s.tx_rate,
+            s.rx_rate,
+            s.satisfaction,
+            s.uptime
+        FROM unifi_clients c
+        LEFT JOIN unifi_client_status s ON c.mac = s.client_mac
+            AND s.recorded_at = (
+                SELECT MAX(recorded_at)
+                FROM unifi_client_status
+                WHERE client_mac = c.mac
+            )
+        ORDER BY c.last_seen DESC
     """
 
     # Get total count
@@ -123,18 +144,32 @@ async def list_clients(
     cursor = db.execute(query)
     rows = cursor.fetchall()
 
-    # Convert to dict format
-    clients = [
-        {
+    # Convert to dict format with WiFi metrics
+    clients = []
+    for row in rows:
+        client = {
             "mac": row[0],
             "hostname": row[1],
             "name": row[2],
             "ip": row[3],
             "blocked": bool(row[4]) if row[4] is not None else False,
             "last_seen": row[5],
+            "is_wired": bool(row[6]) if row[6] is not None else False,
+            "channel": row[7],
+            "essid": row[8],
+            "ap_name": row[9],
+            "signal_strength": row[10],  # Signal in dBm
+            "tx_rate": row[11],  # TX rate in Mbps
+            "rx_rate": row[12],  # RX rate in Mbps
+            "satisfaction": row[13],  # WiFi experience score
+            "uptime": row[14],
+            "device_type": "wireless" if not row[6] else "wired",
         }
-        for row in rows
-    ]
+
+        # Add channel utilization estimate (placeholder - would need separate query)
+        client["channel_utilization"] = 0
+
+        clients.append(client)
 
     return {
         "clients": clients,
