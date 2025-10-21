@@ -103,18 +103,44 @@ async def list_clients(
     List all network clients.
 
     Returns paginated list of clients with optional filtering.
-
-    Note: This endpoint would typically query a 'clients' table.
-    For now, it returns sample data structure.
     """
-    # TODO: Implement actual client listing from database
-    # This would require a clients table tracking connected devices
+    # Query unifi_clients table for client list
+    query = """
+        SELECT DISTINCT mac, hostname, name, ip, blocked, last_seen
+        FROM unifi_clients
+        ORDER BY last_seen DESC
+    """
+
+    # Get total count
+    count_query = "SELECT COUNT(DISTINCT mac) FROM unifi_clients"
+    cursor = db.execute(count_query)
+    total = cursor.fetchone()[0]
+
+    # Add pagination
+    query += f" LIMIT {limit} OFFSET {offset}"
+
+    # Execute query
+    cursor = db.execute(query)
+    rows = cursor.fetchall()
+
+    # Convert to dict format
+    clients = [
+        {
+            "mac": row[0],
+            "hostname": row[1],
+            "name": row[2],
+            "ip": row[3],
+            "blocked": bool(row[4]) if row[4] is not None else False,
+            "last_seen": row[5],
+        }
+        for row in rows
+    ]
+
     return {
-        "clients": [],
-        "total": 0,
+        "clients": clients,
+        "total": total,
         "limit": limit,
         "offset": offset,
-        "message": "Client listing requires clients table (not yet implemented)",
     }
 
 

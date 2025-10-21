@@ -19,6 +19,7 @@ from backend.src.api import (
     device_optimization,
     devices,
     health,
+    historical,
     rules,
     websocket,
 )
@@ -62,6 +63,7 @@ app.include_router(alerts.router, prefix="/api/alerts", tags=["Alerts"])
 app.include_router(rules.router, prefix="/api/rules", tags=["Rules"])
 app.include_router(channels.router, prefix="/api/channels", tags=["Channels"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
+app.include_router(historical.router, prefix="/api/historical", tags=["Historical"])
 app.include_router(websocket.router, tags=["WebSocket"])
 
 

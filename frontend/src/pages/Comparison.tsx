@@ -2,8 +2,9 @@ import { MaterialCard } from "@/components/MaterialCard";
 import type { TimeRange } from "@/components/TimeRangeSelector";
 import { TimeRangeSelector } from "@/components/TimeRangeSelector";
 import { ComparisonChart } from "@/components/charts/ComparisonChart";
-import { useDeviceMetrics, useDevices } from "@/hooks/useDevices";
-import type { Device } from "@/types/device";
+import { useClients } from "@/hooks/useClients";
+import { useClientHistoricalMetrics } from "@/hooks/useHistorical";
+import type { Client } from "@/types/client";
 import {
   CloseCircleOutlined,
   DownloadOutlined,
@@ -27,14 +28,15 @@ import { useState } from "react";
 const { Text } = Typography;
 const { Option } = Select;
 
-interface SelectedDevice {
-  id: string;
+interface SelectedClient {
+  id: string; // Use MAC as ID for compatibility with ComparisonChart
+  mac: string;
   name: string;
   color: string;
 }
 
-// Color palette for device comparison - using Material Design 3 colors
-const DEVICE_COLORS = [
+// Color palette for client comparison - using Material Design 3 colors
+const CLIENT_COLORS = [
   "var(--md-sys-color-primary)",
   "var(--md-sys-color-secondary)",
   "var(--md-sys-color-tertiary)",
@@ -46,24 +48,27 @@ const DEVICE_COLORS = [
 ];
 
 export const Comparison = () => {
-  const [selectedDevices, setSelectedDevices] = useState<SelectedDevice[]>([]);
+  const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
   const [timeRange, setTimeRange] = useState<TimeRange>({
     hours: 24,
     label: "Last 24 Hours",
   });
 
-  // Fetch devices list
-  const { data: devicesResponse, isLoading: devicesLoading } = useDevices();
-  const devices = devicesResponse?.devices || [];
+  // Fetch clients list
+  const { data: clientsResponse, isLoading: clientsLoading } = useClients();
+  const clients = clientsResponse?.clients || [];
 
-  // Fetch metrics for all selected devices (up to 6)
+  // Convert hours to days for client historical metrics API
+  const days = Math.ceil(timeRange.hours / 24);
+
+  // Fetch metrics for all selected clients (up to 6)
   // Always call hooks the same number of times
-  const metrics1 = useDeviceMetrics(selectedDevices[0]?.id, timeRange.hours);
-  const metrics2 = useDeviceMetrics(selectedDevices[1]?.id, timeRange.hours);
-  const metrics3 = useDeviceMetrics(selectedDevices[2]?.id, timeRange.hours);
-  const metrics4 = useDeviceMetrics(selectedDevices[3]?.id, timeRange.hours);
-  const metrics5 = useDeviceMetrics(selectedDevices[4]?.id, timeRange.hours);
-  const metrics6 = useDeviceMetrics(selectedDevices[5]?.id, timeRange.hours);
+  const metrics1 = useClientHistoricalMetrics(selectedClients[0]?.mac, days);
+  const metrics2 = useClientHistoricalMetrics(selectedClients[1]?.mac, days);
+  const metrics3 = useClientHistoricalMetrics(selectedClients[2]?.mac, days);
+  const metrics4 = useClientHistoricalMetrics(selectedClients[3]?.mac, days);
+  const metrics5 = useClientHistoricalMetrics(selectedClients[4]?.mac, days);
+  const metrics6 = useClientHistoricalMetrics(selectedClients[5]?.mac, days);
 
   const metricsQueries = [
     metrics1,
@@ -74,28 +79,29 @@ export const Comparison = () => {
     metrics6,
   ];
 
-  const handleAddDevice = (deviceId: string) => {
-    const device = devices.find((d: Device) => d.id.toString() === deviceId);
-    if (!device) return;
+  const handleAddClient = (clientMac: string) => {
+    const client = clients.find((c: Client) => c.mac === clientMac);
+    if (!client) return;
 
     // Check if already selected
-    if (selectedDevices.some((d) => d.id === deviceId)) {
+    if (selectedClients.some((c) => c.mac === clientMac)) {
       return;
     }
 
-    // Add device with next available color
-    const colorIndex = selectedDevices.length % DEVICE_COLORS.length;
-    const newDevice: SelectedDevice = {
-      id: deviceId,
-      name: device.name || device.ip,
-      color: DEVICE_COLORS[colorIndex],
+    // Add client with next available color
+    const colorIndex = selectedClients.length % CLIENT_COLORS.length;
+    const newClient: SelectedClient = {
+      id: clientMac, // Use MAC as ID for compatibility
+      mac: clientMac,
+      name: client.hostname || client.name || client.mac,
+      color: CLIENT_COLORS[colorIndex],
     };
 
-    setSelectedDevices([...selectedDevices, newDevice]);
+    setSelectedClients([...selectedClients, newClient]);
   };
 
-  const handleRemoveDevice = (deviceId: string) => {
-    setSelectedDevices(selectedDevices.filter((d) => d.id !== deviceId));
+  const handleRemoveClient = (clientMac: string) => {
+    setSelectedClients(selectedClients.filter((c) => c.mac !== clientMac));
   };
 
   const handleTimeRangeChange = (range: TimeRange) => {
@@ -107,8 +113,8 @@ export const Comparison = () => {
     const exportData = {
       timestamp: new Date().toISOString(),
       timeRange: timeRange.label,
-      devices: selectedDevices.map((device, index) => ({
-        ...device,
+      clients: selectedClients.map((client, index) => ({
+        ...client,
         metrics: metricsQueries[index].data?.metrics || [],
       })),
     };
@@ -120,23 +126,36 @@ export const Comparison = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `device-comparison-${Date.now()}.json`;
+    link.download = `client-comparison-${Date.now()}.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
 
-  const availableDevices = devices.filter(
-    (device: Device) =>
-      !selectedDevices.some((d) => d.id === device.id.toString())
+  const availableClients = clients.filter(
+    (client: Client) => !selectedClients.some((c) => c.mac === client.mac)
   );
 
-  // Combine metrics from all devices
-  const comparisonData = selectedDevices.map((device, index) => ({
-    device,
-    metrics: metricsQueries[index].data?.metrics || [],
-    loading: metricsQueries[index].isLoading,
-    error: metricsQueries[index].error,
-  }));
+  // Combine metrics from all clients and transform to ComparisonChart format
+  const comparisonData = selectedClients.map((client, index) => {
+    const queryData = metricsQueries[index].data;
+
+    // Transform MetricTimeSeries[] to DeviceMetric[] format
+    const transformedMetrics =
+      queryData?.metrics?.flatMap((metricSeries) =>
+        metricSeries.data.map((point) => ({
+          recorded_at: point.timestamp,
+          metric_value: point.value,
+          metric_type: metricSeries.metric_name,
+        }))
+      ) || [];
+
+    return {
+      device: client, // Keep property name for compatibility with ComparisonChart
+      metrics: transformedMetrics,
+      loading: metricsQueries[index].isLoading,
+      error: metricsQueries[index].error,
+    };
+  });
 
   return (
     <div>
@@ -152,14 +171,14 @@ export const Comparison = () => {
         <div>
           <h1 className="page-header-title">
             <SwapOutlined style={{ marginRight: 12 }} />
-            Device Comparison
+            Client Performance Comparison
           </h1>
           <p className="page-header-description">
-            Compare performance metrics across multiple devices
+            Compare WiFi performance metrics across multiple clients
           </p>
         </div>
 
-        {selectedDevices.length >= 2 && (
+        {selectedClients.length >= 2 && (
           <Button
             type="primary"
             icon={<DownloadOutlined />}
@@ -178,26 +197,26 @@ export const Comparison = () => {
         <Row gutter={[16, 16]}>
           <Col xs={24} md={16}>
             <Space direction="vertical" style={{ width: "100%" }}>
-              <Text strong>Add Devices to Compare:</Text>
+              <Text strong>Add Clients to Compare:</Text>
               <Select
                 showSearch
-                placeholder="Select a device to add to comparison"
+                placeholder="Select a client to add to comparison"
                 optionFilterProp="children"
-                onChange={handleAddDevice}
-                loading={devicesLoading}
+                onChange={handleAddClient}
+                loading={clientsLoading}
                 style={{ width: "100%" }}
                 size="large"
                 value={undefined}
-                disabled={selectedDevices.length >= 6}
+                disabled={selectedClients.length >= 6}
               >
-                {availableDevices.map((device: Device) => (
-                  <Option key={device.id} value={device.id.toString()}>
-                    {device.name} ({device.model}) - {device.ip}
+                {availableClients.map((client: Client) => (
+                  <Option key={client.mac} value={client.mac}>
+                    {client.hostname || client.name || client.mac} - {client.ip}
                   </Option>
                 ))}
               </Select>
               <Text style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.65)" }}>
-                Select up to 6 devices for comparison
+                Select up to 6 clients for comparison
               </Text>
             </Space>
           </Col>
@@ -214,22 +233,22 @@ export const Comparison = () => {
           </Col>
         </Row>
 
-        {/* Selected Devices */}
-        {selectedDevices.length > 0 && (
+        {/* Selected Clients */}
+        {selectedClients.length > 0 && (
           <div style={{ marginTop: 16 }}>
-            <Text strong>Selected Devices ({selectedDevices.length}):</Text>
+            <Text strong>Selected Clients ({selectedClients.length}):</Text>
             <div style={{ marginTop: 8 }}>
               <Space wrap>
-                {selectedDevices.map((device) => (
+                {selectedClients.map((client) => (
                   <Tag
-                    key={device.id}
-                    color={device.color}
+                    key={client.id}
+                    color={client.color}
                     closable
-                    onClose={() => handleRemoveDevice(device.id)}
+                    onClose={() => handleRemoveClient(client.mac)}
                     icon={<CloseCircleOutlined />}
                     style={{ padding: "4px 8px", fontSize: 14 }}
                   >
-                    {device.name}
+                    {client.name}
                   </Tag>
                 ))}
               </Space>
@@ -237,12 +256,12 @@ export const Comparison = () => {
           </div>
         )}
 
-        {selectedDevices.length >= 2 && (
+        {selectedClients.length >= 2 && (
           <Alert
             message={
               <span>
-                <InfoCircleOutlined /> Comparing {selectedDevices.length}{" "}
-                devices over {timeRange.label.toLowerCase()}
+                <InfoCircleOutlined /> Comparing {selectedClients.length}{" "}
+                clients over {timeRange.label.toLowerCase()}
               </span>
             }
             type="info"
@@ -251,9 +270,9 @@ export const Comparison = () => {
           />
         )}
 
-        {selectedDevices.length === 1 && (
+        {selectedClients.length === 1 && (
           <Alert
-            message="Add at least one more device to see comparison charts"
+            message="Add at least one more client to see comparison charts"
             type="warning"
             showIcon
             style={{ marginTop: 16 }}
@@ -262,14 +281,14 @@ export const Comparison = () => {
       </MaterialCard>
 
       {/* Comparison Charts */}
-      {selectedDevices.length >= 2 ? (
+      {selectedClients.length >= 2 ? (
         <Row gutter={[16, 16]}>
           <Col xs={24}>
             <ComparisonChart
               data={comparisonData}
-              metricType="cpu_usage"
-              title="CPU Usage Comparison"
-              unit="%"
+              metricType="signal_strength"
+              title="WiFi Signal Strength Comparison"
+              unit="dBm"
               timeRange={timeRange}
             />
           </Col>
@@ -277,18 +296,8 @@ export const Comparison = () => {
           <Col xs={24}>
             <ComparisonChart
               data={comparisonData}
-              metricType="memory_usage"
-              title="Memory Usage Comparison"
-              unit="%"
-              timeRange={timeRange}
-            />
-          </Col>
-
-          <Col xs={24}>
-            <ComparisonChart
-              data={comparisonData}
-              metricType="network_rx_mbps"
-              title="Network Download Comparison"
+              metricType="tx_rate"
+              title="Upload Speed Comparison"
               unit="Mbps"
               timeRange={timeRange}
             />
@@ -297,20 +306,30 @@ export const Comparison = () => {
           <Col xs={24}>
             <ComparisonChart
               data={comparisonData}
-              metricType="network_tx_mbps"
-              title="Network Upload Comparison"
+              metricType="rx_rate"
+              title="Download Speed Comparison"
               unit="Mbps"
+              timeRange={timeRange}
+            />
+          </Col>
+
+          <Col xs={24}>
+            <ComparisonChart
+              data={comparisonData}
+              metricType="satisfaction"
+              title="Connection Quality Comparison"
+              unit="score"
               timeRange={timeRange}
             />
           </Col>
         </Row>
-      ) : selectedDevices.length === 1 ? (
+      ) : selectedClients.length === 1 ? (
         <MaterialCard elevation={1}>
           <Empty
             description={
               <span>
                 <Text>
-                  You've selected 1 device. Add at least one more device to see
+                  You've selected 1 client. Add at least one more client to see
                   comparison charts.
                 </Text>
               </span>
@@ -324,7 +343,7 @@ export const Comparison = () => {
             description={
               <span>
                 <Text>
-                  No devices selected. Use the dropdown above to add devices to
+                  No clients selected. Use the dropdown above to add clients to
                   compare.
                 </Text>
               </span>
