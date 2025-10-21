@@ -112,6 +112,44 @@ class AlertManager:
         logger.info(f"Created alert rule: {created_rule.name} (ID: {created_rule.id})")
         return created_rule
 
+    def create_alert_rule(self, **kwargs) -> AlertRule:
+        """
+        Create a new alert rule (convenience method).
+
+        Accepts individual parameters and creates an AlertRule object.
+        This is a convenience wrapper around create_rule().
+
+        Supports both shorthand (`>`, `<`, `=`, etc.) and
+        full condition names (`gt`, `lt`, `eq`, etc.).
+
+        Args:
+            **kwargs: AlertRule parameters
+
+        Returns:
+            Created rule with ID assigned
+        """
+        # Map shorthand conditions to full names
+        condition_map = {
+            ">": "gt",
+            "<": "lt",
+            "=": "eq",
+            "==": "eq",
+            "!=": "ne",
+            ">=": "gte",
+            "<=": "lte",
+        }
+
+        if "condition" in kwargs:
+            condition = kwargs["condition"]
+            kwargs["condition"] = condition_map.get(condition, condition)
+
+        # Provide default severity if not specified
+        if "severity" not in kwargs:
+            kwargs["severity"] = "warning"
+
+        rule = AlertRule(**kwargs)
+        return self.create_rule(rule)
+
     def get_rule(self, rule_id: int) -> Optional[AlertRule]:
         """
         Get alert rule by ID.

@@ -16,20 +16,21 @@ class NotificationChannelRepository(BaseRepository):
         data = channel.to_dict()
         query = """
             INSERT INTO notification_channels (
-                name, channel_type, config, enabled, min_severity
-            ) VALUES (?, ?, ?, ?, ?)
+                id, name, channel_type, config, enabled, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
         """
         params = (
+            data["id"],
             data["name"],
             data["channel_type"],
             data["config"],
             data["enabled"],
-            data.get("min_severity"),
+            data["created_at"],
+            data["updated_at"],
         )
 
         with self.db.transaction():
-            cursor = self.db.execute(query, params)
-            channel.id = cursor.lastrowid
+            self.db.execute(query, params)
 
         return channel
 

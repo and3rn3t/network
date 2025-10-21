@@ -19,6 +19,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from src.alerts.alert_manager import AlertManager
+from src.alerts.models import AlertRule, NotificationChannel
 from src.database.database import Database
 
 
@@ -93,14 +94,17 @@ class TestAlertLifecycle:
             "smtp_password": "password",
             "from_email": "alerts@example.com",
             "to_emails": ["admin@example.com"],
+            "min_severity": "warning",
         }
 
         channel = alert_manager.create_channel(
-            name="Email Alerts",
-            channel_type="email",
-            config=channel_config,
-            enabled=True,
-            min_severity="warning",
+            NotificationChannel(
+                id="email_alerts",
+                name="Email Alerts",
+                channel_type="email",
+                config=channel_config,
+                enabled=True,
+            )
         )
 
         assert channel.id is not None
@@ -183,14 +187,17 @@ class TestAlertLifecycle:
         channel_config = {
             "webhook_url": "https://hooks.slack.com/services/TEST/TEST/TEST",
             "webhook_type": "slack",
+            "min_severity": "critical",
         }
 
         channel = alert_manager.create_channel(
-            name="Slack Alerts",
-            channel_type="webhook",
-            config=channel_config,
-            enabled=True,
-            min_severity="critical",
+            NotificationChannel(
+                id="slack_alerts",
+                name="Slack Alerts",
+                channel_type="webhook",
+                config=channel_config,
+                enabled=True,
+            )
         )
 
         # 2. Create status change rule
@@ -277,16 +284,20 @@ class TestAlertMuting:
         """Verify muted alerts don't send notifications."""
         # 1. Create channel and rule
         channel = alert_manager.create_channel(
-            name="Test Email",
-            channel_type="email",
-            config={
-                "smtp_host": "smtp.test.com",
-                "smtp_port": 587,
-                "smtp_user": "test@test.com",
-                "smtp_password": "pass",
-                "from_email": "test@test.com",
-                "to_emails": ["admin@test.com"],
-            },
+            NotificationChannel(
+                id="test_email",
+                name="Test Email",
+                channel_type="email",
+                config={
+                    "smtp_host": "smtp.test.com",
+                    "smtp_port": 587,
+                    "smtp_user": "test@test.com",
+                    "smtp_password": "pass",
+                    "from_email": "test@test.com",
+                    "to_emails": ["admin@test.com"],
+                },
+                enabled=True,
+            )
         )
 
         rule = alert_manager.create_alert_rule(
@@ -340,16 +351,20 @@ class TestAlertMuting:
         """Test muting alerts for specific hosts."""
         # Create rule
         channel = alert_manager.create_channel(
-            name="Test Channel",
-            channel_type="email",
-            config={
-                "smtp_host": "smtp.test.com",
-                "smtp_port": 587,
-                "smtp_user": "test@test.com",
-                "smtp_password": "pass",
-                "from_email": "test@test.com",
-                "to_emails": ["admin@test.com"],
-            },
+            NotificationChannel(
+                id="test_channel",
+                name="Test Channel",
+                channel_type="email",
+                config={
+                    "smtp_host": "smtp.test.com",
+                    "smtp_port": 587,
+                    "smtp_user": "test@test.com",
+                    "smtp_password": "pass",
+                    "from_email": "test@test.com",
+                    "to_emails": ["admin@test.com"],
+                },
+                enabled=True,
+            )
         )
 
         alert_manager.create_alert_rule(
@@ -388,16 +403,20 @@ class TestCooldownBehavior:
         """Verify cooldown prevents alert spam."""
         # Create channel and rule with 10-minute cooldown
         channel = alert_manager.create_channel(
-            name="Email",
-            channel_type="email",
-            config={
-                "smtp_host": "smtp.test.com",
-                "smtp_port": 587,
-                "smtp_user": "test@test.com",
-                "smtp_password": "pass",
-                "from_email": "test@test.com",
-                "to_emails": ["admin@test.com"],
-            },
+            NotificationChannel(
+                id="email",
+                name="Email",
+                channel_type="email",
+                config={
+                    "smtp_host": "smtp.test.com",
+                    "smtp_port": 587,
+                    "smtp_user": "test@test.com",
+                    "smtp_password": "pass",
+                    "from_email": "test@test.com",
+                    "to_emails": ["admin@test.com"],
+                },
+                enabled=True,
+            )
         )
 
         alert_manager.create_alert_rule(
@@ -449,25 +468,33 @@ class TestMultiChannelNotification:
         """Verify alerts sent to all configured channels."""
         # Create multiple channels
         email_channel = alert_manager.create_channel(
-            name="Email",
-            channel_type="email",
-            config={
-                "smtp_host": "smtp.test.com",
-                "smtp_port": 587,
-                "smtp_user": "test@test.com",
-                "smtp_password": "pass",
-                "from_email": "test@test.com",
-                "to_emails": ["admin@test.com"],
-            },
+            NotificationChannel(
+                id="email",
+                name="Email",
+                channel_type="email",
+                config={
+                    "smtp_host": "smtp.test.com",
+                    "smtp_port": 587,
+                    "smtp_user": "test@test.com",
+                    "smtp_password": "pass",
+                    "from_email": "test@test.com",
+                    "to_emails": ["admin@test.com"],
+                },
+                enabled=True,
+            )
         )
 
         slack_channel = alert_manager.create_channel(
-            name="Slack",
-            channel_type="webhook",
-            config={
-                "webhook_url": "https://hooks.slack.com/test",
-                "webhook_type": "slack",
-            },
+            NotificationChannel(
+                id="slack",
+                name="Slack",
+                channel_type="webhook",
+                config={
+                    "webhook_url": "https://hooks.slack.com/test",
+                    "webhook_type": "slack",
+                },
+                enabled=True,
+            )
         )
 
         # Create rule with both channels
@@ -500,17 +527,21 @@ class TestMultiChannelNotification:
         """Test that channels only receive alerts matching severity filter."""
         # Create channel with WARNING minimum severity
         channel = alert_manager.create_channel(
-            name="Warning+ Only",
-            channel_type="email",
-            config={
-                "smtp_host": "smtp.test.com",
-                "smtp_port": 587,
-                "smtp_user": "test@test.com",
-                "smtp_password": "pass",
-                "from_email": "test@test.com",
-                "to_emails": ["admin@test.com"],
-            },
-            min_severity="warning",
+            NotificationChannel(
+                id="warning_plus_only",
+                name="Warning+ Only",
+                channel_type="email",
+                config={
+                    "smtp_host": "smtp.test.com",
+                    "smtp_port": 587,
+                    "smtp_user": "test@test.com",
+                    "smtp_password": "pass",
+                    "from_email": "test@test.com",
+                    "to_emails": ["admin@test.com"],
+                    "min_severity": "warning",
+                },
+                enabled=True,
+            )
         )
 
         # Create INFO rule (should not notify)
@@ -565,16 +596,20 @@ class TestAlertQueries:
         """Test filtering alerts by status."""
         # Create multiple alerts with different statuses
         channel = alert_manager.create_channel(
-            name="Test",
-            channel_type="email",
-            config={
-                "smtp_host": "smtp.test.com",
-                "smtp_port": 587,
-                "smtp_user": "test@test.com",
-                "smtp_password": "pass",
-                "from_email": "test@test.com",
-                "to_emails": ["admin@test.com"],
-            },
+            NotificationChannel(
+                id="test",
+                name="Test",
+                channel_type="email",
+                config={
+                    "smtp_host": "smtp.test.com",
+                    "smtp_port": 587,
+                    "smtp_user": "test@test.com",
+                    "smtp_password": "pass",
+                    "from_email": "test@test.com",
+                    "to_emails": ["admin@test.com"],
+                },
+                enabled=True,
+            )
         )
 
         alert_manager.create_alert_rule(
@@ -614,16 +649,20 @@ class TestAlertQueries:
     def test_alert_filtering_by_severity(self, alert_manager):
         """Test filtering alerts by severity."""
         channel = alert_manager.create_channel(
-            name="Test",
-            channel_type="email",
-            config={
-                "smtp_host": "smtp.test.com",
-                "smtp_port": 587,
-                "smtp_user": "test@test.com",
-                "smtp_password": "pass",
-                "from_email": "test@test.com",
-                "to_emails": ["admin@test.com"],
-            },
+            NotificationChannel(
+                id="test",
+                name="Test",
+                channel_type="email",
+                config={
+                    "smtp_host": "smtp.test.com",
+                    "smtp_port": 587,
+                    "smtp_user": "test@test.com",
+                    "smtp_password": "pass",
+                    "from_email": "test@test.com",
+                    "to_emails": ["admin@test.com"],
+                },
+                enabled=True,
+            )
         )
 
         # Create rules with different severities
@@ -634,9 +673,9 @@ class TestAlertQueries:
         ]
         for severity in severities:
             alert_manager.create_alert_rule(
-                name=f"{severity.value} Rule",
+                name=f"{severity} Rule",
                 rule_type="threshold",
-                metric_name=f"metric_{severity.value}",
+                metric_name=f"metric_{severity}",
                 condition=">",
                 threshold=50.0,
                 severity=severity,
@@ -650,7 +689,7 @@ class TestAlertQueries:
                 """,
                 (
                     "host-1",
-                    f"metric_{severity.value}",
+                    f"metric_{severity}",
                     75.0,
                     datetime.now().isoformat(),
                 ),
@@ -671,26 +710,33 @@ class TestErrorHandling:
         """Test that invalid channel configs are rejected."""
         with pytest.raises(ValueError):
             alert_manager.create_channel(
-                name="Bad Email",
-                channel_type="email",
-                # Missing required fields
-                config={"smtp_host": "smtp.test.com"},
+                NotificationChannel(
+                    id="bad_email",
+                    name="Bad Email",
+                    channel_type="email",
+                    # Missing required fields
+                    config={"smtp_host": "smtp.test.com"},
+                    enabled=True,
+                )
             )
 
     def test_disabled_channel_no_notification(self, alert_manager, mock_notifiers):
         """Test that disabled channels don't send notifications."""
         channel = alert_manager.create_channel(
-            name="Disabled Channel",
-            channel_type="email",
-            config={
-                "smtp_host": "smtp.test.com",
-                "smtp_port": 587,
-                "smtp_user": "test@test.com",
-                "smtp_password": "pass",
-                "from_email": "test@test.com",
-                "to_emails": ["admin@test.com"],
-            },
-            enabled=False,  # Disabled
+            NotificationChannel(
+                id="disabled_channel",
+                name="Disabled Channel",
+                channel_type="email",
+                config={
+                    "smtp_host": "smtp.test.com",
+                    "smtp_port": 587,
+                    "smtp_user": "test@test.com",
+                    "smtp_password": "pass",
+                    "from_email": "test@test.com",
+                    "to_emails": ["admin@test.com"],
+                },
+                enabled=False,  # Disabled
+            )
         )
 
         alert_manager.create_alert_rule(
@@ -716,16 +762,20 @@ class TestErrorHandling:
     def test_disabled_rule_no_evaluation(self, alert_manager):
         """Test that disabled rules are not evaluated."""
         channel = alert_manager.create_channel(
-            name="Channel",
-            channel_type="email",
-            config={
-                "smtp_host": "smtp.test.com",
-                "smtp_port": 587,
-                "smtp_user": "test@test.com",
-                "smtp_password": "pass",
-                "from_email": "test@test.com",
-                "to_emails": ["admin@test.com"],
-            },
+            NotificationChannel(
+                id="channel",
+                name="Channel",
+                channel_type="email",
+                config={
+                    "smtp_host": "smtp.test.com",
+                    "smtp_port": 587,
+                    "smtp_user": "test@test.com",
+                    "smtp_password": "pass",
+                    "from_email": "test@test.com",
+                    "to_emails": ["admin@test.com"],
+                },
+                enabled=True,
+            )
         )
 
         alert_manager.create_alert_rule(

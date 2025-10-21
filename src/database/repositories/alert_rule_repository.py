@@ -22,9 +22,9 @@ class AlertRuleRepository(BaseRepository):
         query = """
             INSERT INTO alert_rules (
                 name, description, rule_type, metric_name, host_id,
-                condition, threshold, expected_status, severity, enabled,
-                notification_channels, cooldown_minutes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                condition, threshold, severity, enabled,
+                notification_channels, cooldown_minutes, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         data = rule.to_dict()
@@ -36,11 +36,12 @@ class AlertRuleRepository(BaseRepository):
             data.get("host_id"),
             data["condition"],
             data.get("threshold"),
-            data.get("expected_status"),
             data["severity"],
             data["enabled"],
             data["notification_channels"],
             data["cooldown_minutes"],
+            data["created_at"],
+            data["updated_at"],
         )
 
         with self.db.transaction():
@@ -91,9 +92,9 @@ class AlertRuleRepository(BaseRepository):
         query = """
             UPDATE alert_rules
             SET name = ?, description = ?, rule_type = ?, metric_name = ?,
-                host_id = ?, condition = ?, threshold = ?, expected_status = ?,
+                host_id = ?, condition = ?, threshold = ?,
                 severity = ?, enabled = ?, notification_channels = ?,
-                cooldown_minutes = ?, updated_at = CURRENT_TIMESTAMP
+                cooldown_minutes = ?, updated_at = ?
             WHERE id = ?
         """
 
@@ -106,11 +107,11 @@ class AlertRuleRepository(BaseRepository):
             data.get("host_id"),
             data["condition"],
             data.get("threshold"),
-            data.get("expected_status"),
             data["severity"],
             data["enabled"],
             data["notification_channels"],
             data["cooldown_minutes"],
+            data["updated_at"],
             rule.id,
         )
 
