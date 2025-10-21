@@ -19,6 +19,8 @@ const Comparison = lazy(() => import("@/pages/Comparison"));
 const Correlation = lazy(() => import("@/pages/Correlation"));
 const Analytics = lazy(() => import("@/pages/Analytics"));
 const Alerts = lazy(() => import("@/pages/Alerts"));
+const Rules = lazy(() => import("@/pages/Rules"));
+const Channels = lazy(() => import("@/pages/Channels"));
 const Reports = lazy(() => import("@/pages/Reports"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const DeviceManagement = lazy(() => import("./pages/DeviceManagement"));
@@ -82,6 +84,8 @@ function App() {
                     <Route path="correlation" element={<Correlation />} />
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="alerts" element={<Alerts />} />
+                    <Route path="rules" element={<Rules />} />
+                    <Route path="channels" element={<Channels />} />
                     <Route path="reports" element={<Reports />} />
                     <Route path="devices" element={<DeviceManagement />} />
                     <Route path="clients" element={<ClientManagement />} />

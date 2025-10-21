@@ -14,9 +14,11 @@ import {
   HddOutlined,
   LineChartOutlined,
   LogoutOutlined,
+  NotificationOutlined,
   SettingOutlined,
   SwapOutlined,
   TeamOutlined,
+  ThunderboltOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
@@ -64,9 +66,26 @@ export const AppLayout: React.FC = () => {
       icon: <BellOutlined />,
       label: (
         <Badge count={newAlertCount} offset={[10, 0]}>
-          <Link to="/alerts">Alert Intelligence</Link>
+          Alert System
         </Badge>
       ),
+      children: [
+        {
+          key: "/alerts",
+          icon: <BellOutlined />,
+          label: <Link to="/alerts">Active Alerts</Link>,
+        },
+        {
+          key: "/rules",
+          icon: <ThunderboltOutlined />,
+          label: <Link to="/rules">Alert Rules</Link>,
+        },
+        {
+          key: "/channels",
+          icon: <NotificationOutlined />,
+          label: <Link to="/channels">Notification Channels</Link>,
+        },
+      ],
     },
     {
       key: "/devices",
