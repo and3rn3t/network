@@ -4,9 +4,11 @@ Alert rule repository for managing alert rules.
 Provides CRUD operations for alert_rules table.
 """
 
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from src.alerts.models import AlertRule
+if TYPE_CHECKING:
+    from src.alerts.models import AlertRule
+
 from src.database.repositories.base import BaseRepository
 
 
@@ -15,7 +17,7 @@ class AlertRuleRepository(BaseRepository):
 
     table_name = "alert_rules"
 
-    def create(self, rule: AlertRule) -> AlertRule:
+    def create(self, rule: "AlertRule") -> "AlertRule":
         """Create new alert rule."""
         query = """
             INSERT INTO alert_rules (
@@ -47,8 +49,10 @@ class AlertRuleRepository(BaseRepository):
 
         return rule
 
-    def get_by_id(self, rule_id: int) -> Optional[AlertRule]:
+    def get_by_id(self, rule_id: int) -> Optional["AlertRule"]:
         """Get alert rule by ID."""
+        from src.alerts.models import AlertRule
+
         query = "SELECT * FROM alert_rules WHERE id = ?"
         row = self.db.fetch_one(query, (rule_id,))
         if not row:
@@ -58,8 +62,10 @@ class AlertRuleRepository(BaseRepository):
         data = dict(row)
         return AlertRule.from_dict(data)
 
-    def get_all(self, enabled_only: bool = False) -> List[AlertRule]:
+    def get_all(self, enabled_only: bool = False) -> List["AlertRule"]:
         """Get all alert rules."""
+        from src.alerts.models import AlertRule
+
         if enabled_only:
             query = "SELECT * FROM alert_rules WHERE enabled = 1 ORDER BY name"
         else:
@@ -68,8 +74,10 @@ class AlertRuleRepository(BaseRepository):
         rows = self.db.fetch_all(query)
         return [AlertRule.from_dict(dict(row)) for row in rows]
 
-    def get_by_host(self, host_id: str) -> List[AlertRule]:
+    def get_by_host(self, host_id: str) -> List["AlertRule"]:
         """Get rules for specific host."""
+        from src.alerts.models import AlertRule
+
         query = """
             SELECT * FROM alert_rules
             WHERE (host_id = ? OR host_id IS NULL) AND enabled = 1
@@ -78,7 +86,7 @@ class AlertRuleRepository(BaseRepository):
         rows = self.db.fetch_all(query, (host_id,))
         return [AlertRule.from_dict(dict(row)) for row in rows]
 
-    def update(self, rule: AlertRule) -> AlertRule:
+    def update(self, rule: "AlertRule") -> "AlertRule":
         """Update existing alert rule."""
         query = """
             UPDATE alert_rules

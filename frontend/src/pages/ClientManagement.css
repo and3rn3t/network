@@ -1,0 +1,16 @@
+/* ClientManagement.css */
+
+.client-management {
+  padding: 0;
+}
+
+.client-info-box {
+  margin-top: 8px;
+  padding: 12px;
+  background-color: var(--md-sys-color-surface-variant);
+  border-radius: 8px;
+}
+
+.duration-helper {
+  margin-top: 8px;
+}

@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 # Add src to path
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.database.database import Database
 from src.unifi_client import UniFiClient

@@ -12,11 +12,25 @@ from src.analytics.analytics_engine import (
     Statistics,
     TrendAnalysis,
 )
+from src.analytics.unifi_analytics import (
+    ClientExperience,
+    DeviceHealthScore,
+    NetworkTopology,
+    SignalQuality,
+    UniFiAnalyticsEngine,
+)
 
 __all__ = [
+    # Cloud API analytics
     "AnalyticsEngine",
     "Statistics",
     "TrendAnalysis",
     "Anomaly",
     "CapacityForecast",
+    # UniFi Controller analytics
+    "UniFiAnalyticsEngine",
+    "DeviceHealthScore",
+    "ClientExperience",
+    "NetworkTopology",
+    "SignalQuality",
 ]

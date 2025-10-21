@@ -15,6 +15,7 @@ from backend.src.api import (
     auth,
     cache,
     channels,
+    clients,
     device_optimization,
     devices,
     health,
@@ -55,6 +56,7 @@ app.include_router(devices.router, prefix="/api/devices", tags=["Devices"])
 app.include_router(
     device_optimization.router, prefix="/api/devices", tags=["Device Optimization"]
 )
+app.include_router(clients.router, prefix="/api/clients", tags=["Clients"])
 app.include_router(cache.router, prefix="/api/cache", tags=["Cache Management"])
 app.include_router(alerts.router, prefix="/api/alerts", tags=["Alerts"])
 app.include_router(rules.router, prefix="/api/rules", tags=["Rules"])

@@ -21,6 +21,8 @@ const Analytics = lazy(() => import("@/pages/Analytics"));
 const Alerts = lazy(() => import("@/pages/Alerts"));
 const Reports = lazy(() => import("@/pages/Reports"));
 const Settings = lazy(() => import("@/pages/Settings"));
+const DeviceManagement = lazy(() => import("./pages/DeviceManagement"));
+const ClientManagement = lazy(() => import("./pages/ClientManagement"));
 const Login = lazy(() => import("@/pages/Login"));
 
 // Configure React Query
@@ -81,6 +83,8 @@ function App() {
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="alerts" element={<Alerts />} />
                     <Route path="reports" element={<Reports />} />
+                    <Route path="devices" element={<DeviceManagement />} />
+                    <Route path="clients" element={<ClientManagement />} />
                     <Route path="settings" element={<Settings />} />
                   </Route>
                 </Routes>

@@ -5,17 +5,13 @@ This package provides alerting and notification capabilities for monitoring
 UniFi network devices.
 """
 
-from .alert_engine import AlertEngine
-from .alert_manager import AlertManager
+# Only export models to avoid circular imports with repositories
+# Import AlertEngine, AlertManager, NotificationManager directly when needed
 from .models import Alert, AlertMute, AlertRule, NotificationChannel
-from .notification_manager import NotificationManager
 
 __all__ = [
     "AlertRule",
     "Alert",
     "NotificationChannel",
     "AlertMute",
-    "AlertEngine",
-    "AlertManager",
-    "NotificationManager",
 ]

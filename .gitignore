@@ -44,6 +44,12 @@ data/
 *.csv
 *.json.bak
 
+# Databases
+*.db
+*.db-journal
+network_monitor.db
+!data/.gitkeep
+
 # OS
 .DS_Store
 Thumbs.db

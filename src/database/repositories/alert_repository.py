@@ -1,9 +1,11 @@
 """Alert repository for managing triggered alerts."""
 
 from datetime import datetime
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from src.alerts.models import Alert
+if TYPE_CHECKING:
+    from src.alerts.models import Alert
+
 from src.database.repositories.base import BaseRepository
 
 
@@ -12,7 +14,7 @@ class AlertRepository(BaseRepository):
 
     table_name = "alert_history"
 
-    def create(self, alert: Alert) -> Alert:
+    def create(self, alert: "Alert") -> "Alert":
         """Create new alert."""
         data = alert.to_dict()
         query = """
@@ -39,14 +41,18 @@ class AlertRepository(BaseRepository):
 
         return alert
 
-    def get_by_id(self, alert_id: int) -> Optional[Alert]:
+    def get_by_id(self, alert_id: int) -> Optional["Alert"]:
         """Get alert by ID."""
+        from src.alerts.models import Alert
+
         query = "SELECT * FROM alert_history WHERE id = ?"
         row = self.db.fetch_one(query, (alert_id,))
         return Alert.from_dict(dict(row)) if row else None
 
-    def get_active(self) -> List[Alert]:
+    def get_active(self) -> List["Alert"]:
         """Get all active (unresolved) alerts."""
+        from src.alerts.models import Alert
+
         query = """
             SELECT * FROM alert_history
             WHERE resolved_at IS NULL
@@ -55,8 +61,10 @@ class AlertRepository(BaseRepository):
         rows = self.db.fetch_all(query)
         return [Alert.from_dict(dict(row)) for row in rows]
 
-    def get_by_rule(self, rule_id: int) -> List[Alert]:
+    def get_by_rule(self, rule_id: int) -> List["Alert"]:
         """Get all alerts for a rule."""
+        from src.alerts.models import Alert
+
         query = """
             SELECT * FROM alert_history
             WHERE rule_id = ?
@@ -65,8 +73,10 @@ class AlertRepository(BaseRepository):
         rows = self.db.fetch_all(query, (rule_id,))
         return [Alert.from_dict(dict(row)) for row in rows]
 
-    def get_recent(self, hours: int = 24, limit: int = 100) -> List[Alert]:
+    def get_recent(self, hours: int = 24, limit: int = 100) -> List["Alert"]:
         """Get recent alerts."""
+        from src.alerts.models import Alert
+
         query = """
             SELECT * FROM alert_history
             WHERE triggered_at >= datetime('now', '-' || ? || ' hours')
@@ -76,7 +86,7 @@ class AlertRepository(BaseRepository):
         rows = self.db.fetch_all(query, (hours, limit))
         return [Alert.from_dict(dict(row)) for row in rows]
 
-    def update(self, alert: Alert) -> Alert:
+    def update(self, alert: "Alert") -> "Alert":
         """Update alert."""
         data = alert.to_dict()
         query = """

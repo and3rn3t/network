@@ -11,10 +11,12 @@ import {
   DashboardOutlined,
   DotChartOutlined,
   ExportOutlined,
+  HddOutlined,
   LineChartOutlined,
   LogoutOutlined,
   SettingOutlined,
   SwapOutlined,
+  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
@@ -65,6 +67,16 @@ export const AppLayout: React.FC = () => {
           <Link to="/alerts">Alert Intelligence</Link>
         </Badge>
       ),
+    },
+    {
+      key: "/devices",
+      icon: <HddOutlined />,
+      label: <Link to="/devices">Device Management</Link>,
+    },
+    {
+      key: "/clients",
+      icon: <TeamOutlined />,
+      label: <Link to="/clients">Client Management</Link>,
     },
     {
       key: "/reports",

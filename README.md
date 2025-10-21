@@ -64,7 +64,38 @@ cp config.example.py config.py
 # Edit config.py with your UniFi credentials
 ```
 
+### Database Setup
+
+```bash
+# Create fresh database with all tables
+python scripts/create_fresh_db.py
+```
+
 ### Basic Usage
+
+#### 1. Collect UniFi data (recommended)
+
+```bash
+# Run collection once
+python collect_unifi_data.py --verbose
+
+# Run continuously (daemon mode, polls every 5 minutes)
+python collect_unifi_data.py --daemon --interval 300
+```
+
+#### 2. View analytics
+
+```bash
+python scripts/unifi_analytics_demo.py
+```
+
+#### 3. Test controller connection
+
+```bash
+python scripts/quick_test_unifi.py
+```
+
+### Legacy Cloud API Usage
 
 #### 1. List all devices
 
@@ -121,6 +152,10 @@ python -m alerts.cli channel list
 
 See [docs/CLI_USER_GUIDE.md](docs/CLI_USER_GUIDE.md) for complete CLI documentation.
 
+## Utility Scripts
+
+All utility and test scripts are located in the `scripts/` directory. See [scripts/README.md](scripts/README.md) for a complete list and documentation.
+
 ## Analytics Features
 
 The analytics engine provides comprehensive insights into your network:
@@ -145,6 +180,45 @@ The enhanced dashboard provides a beautiful terminal UI with:
 - **Live Mode**: Auto-refresh with configurable intervals
 
 See [docs/ENHANCED_DASHBOARD.md](docs/ENHANCED_DASHBOARD.md) for complete dashboard documentation.
+
+## Repository Structure
+
+```
+network/
+├── collect_unifi_data.py      # Main collection script
+├── config.py                   # Configuration (create from config.example.py)
+├── requirements.txt            # Python dependencies
+├── README.md                   # This file
+├── network_monitor.db          # Active database
+│
+├── src/                        # Source code
+│   ├── unifi_controller.py     # UniFi Controller API client
+│   ├── collector/              # Data collection services
+│   ├── database/               # Database layer (models, repositories, schemas)
+│   ├── analytics/              # Analytics engine
+│   └── alerts/                 # Alert system
+│
+├── scripts/                    # Utility & test scripts
+│   ├── README.md               # Script documentation
+│   ├── *.py                    # Python utilities (40 scripts)
+│   ├── *.ps1                   # PowerShell automation (4 scripts)
+│   └── api_explorer.http       # REST Client API testing
+│
+├── docs/                       # Documentation (92 files)
+│   ├── QUICKSTART.md           # Cloud API quick start
+│   ├── UNIFI_QUICKSTART.md     # UniFi local controller quick start
+│   ├── ROADMAP.md              # Project roadmap
+│   └── *.md                    # Detailed guides and references
+│
+├── data/                       # Data storage & backups
+│   ├── *.db                    # Database backups
+│   └── hosts_list.json         # Cached host data
+│
+├── examples/                   # Example scripts
+├── tests/                      # Test suite
+├── exports/                    # Generated exports
+└── reports/                    # Generated reports
+```
 
 ## Documentation
 
