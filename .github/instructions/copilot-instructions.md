@@ -12,6 +12,40 @@ This is a comprehensive UniFi Network Controller monitoring and management syste
 
 The system is designed for production use with full type safety, comprehensive testing, and extensive documentation.
 
+**Current Status**: ✅ Production Ready (Task 8 Complete - October 2025)
+
+- Successfully collecting from local UniFi Controller (UDM Pro)
+- 6 devices, 38+ clients, 267 metrics per collection
+- Collection time: ~3 seconds
+- All 8 project tasks completed
+
+## Repository Structure
+
+```
+network/
+├── src/                        # Production source code
+│   ├── api/                   # UniFi API client
+│   ├── collector/             # Data collection
+│   ├── database/              # Database and repositories
+│   ├── analytics/             # Analytics engine
+│   └── alerts/                # Alert system
+├── scripts/                    # Utilities and testing (44 files)
+│   ├── *.py                   # Database, collection, test scripts
+│   ├── *.ps1                  # PowerShell automation
+│   └── api_explorer.http      # REST API testing
+├── docs/                       # Documentation (92 files)
+│   ├── guides/                # User guides
+│   ├── reference/             # Technical reference
+│   ├── development/           # Developer docs
+│   └── archive/               # Historical progress reports
+├── data/                       # Database backups
+├── config.py                   # Configuration (not in git)
+├── config.example.py           # Configuration template
+└── collect_unifi_data.py      # Main collection script
+```
+
+**Important**: Keep root directory minimal (≤10 files). Utilities go in `scripts/`, documentation in `docs/`.
+
 ## Code Style & Standards
 
 ### Python Standards
@@ -36,6 +70,30 @@ The system is designed for production use with full type safety, comprehensive t
 - Create custom exceptions for API-specific errors
 - Always include meaningful error messages
 - Log errors appropriately with context
+
+### Circular Import Prevention
+
+**Critical Pattern**: Avoid circular imports using TYPE_CHECKING and lazy imports:
+
+```python
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.alerts.engine import AlertEngine  # Type hints only
+    from src.alerts.manager import AlertManager
+
+# Lazy import in method
+def get_engine(self) -> "AlertEngine":
+    from src.alerts.engine import AlertEngine  # Import at runtime
+    return AlertEngine()
+```
+
+**Rules**:
+
+- Keep `__init__.py` minimal - avoid re-exporting classes
+- Use TYPE_CHECKING for type hints only
+- Implement lazy imports in methods that need dependencies
+- Structure modules with clear dependency hierarchy
 
 ## API Client Development
 
@@ -79,11 +137,42 @@ The system is designed for production use with full type safety, comprehensive t
 
 ## UniFi-Specific Guidelines
 
+### Authentication
+
+**Local Controller Pattern**:
+
+```python
+import requests
+
+class UniFiClient:
+    def __init__(self, base_url: str, username: str, password: str, verify_ssl: bool = True):
+        self.session = requests.Session()
+        self.session.verify = verify_ssl
+        self.base_url = base_url
+        self._login(username, password)
+
+    def _login(self, username: str, password: str) -> None:
+        """Login and establish session."""
+        response = self.session.post(
+            f"{self.base_url}/api/login",
+            json={"username": username, "password": password},
+            timeout=30
+        )
+        response.raise_for_status()
+```
+
+**Key Facts**:
+
+- UniFi uses cookie-based sessions (not token auth)
+- Sessions expire after ~24 hours of inactivity
+- Must use `requests.Session()` to maintain cookies
+- Local controllers have different auth than cloud API
+
 ### Common Endpoints
 
 - `/api/self/sites` - List sites
 - `/api/s/{site}/stat/device` - List devices
-- `/api/s/{site}/stat/sta` - List clients
+- `/api/s/{site}/stat/sta` - List clients (active only)
 - `/api/s/{site}/rest/user` - Manage users
 - `/api/s/{site}/cmd/devmgr` - Device commands
 
@@ -93,6 +182,35 @@ The system is designed for production use with full type safety, comprehensive t
 - Devices have MAC addresses as primary identifiers
 - Client data is ephemeral (only active/recently active clients)
 - Settings are often nested in the `config` field
+- MAC addresses: stored lowercase without colons for consistency
+- Timestamps: UniFi uses Unix epoch, convert to ISO 8601 for storage
+
+### API Quirks and Patterns
+
+**Method Signatures**:
+
+```python
+# Local controller - no site parameter (uses 'default' internally)
+def get_devices(self) -> list[dict]:
+    return self._request("GET", "/api/s/default/stat/device")
+
+# Cloud API - requires site parameter
+def get_devices(self, site: str) -> list[dict]:
+    return self._request("GET", f"/api/s/{site}/stat/device")
+```
+
+**Data Normalization**:
+
+```python
+# MAC addresses - normalize format
+mac_raw = "12:34:56:78:9a:bc"  # From API
+mac_normalized = mac_raw.replace(":", "").lower()  # For storage
+
+# Timestamps - convert from Unix epoch
+from datetime import datetime
+timestamp_raw = 1729458000  # From API
+timestamp_iso = datetime.fromtimestamp(timestamp_raw).isoformat()  # For DB
+```
 
 ### Best Practices
 
@@ -100,6 +218,9 @@ The system is designed for production use with full type safety, comprehensive t
 - Use MAC addresses in lowercase without colons for consistency
 - Cache site lists when making multiple calls
 - Respect the controller's load (avoid rapid successive calls)
+- Add 0.5-1 second delay between batch operations
+- Test with actual controller responses, not mock data
+- Client list only shows active/recent - offline clients won't appear
 
 ## Dependencies
 
@@ -113,6 +234,61 @@ The system is designed for production use with full type safety, comprehensive t
 - Provide `config.example.py` as template
 - Support environment variables as alternative to config file
 - Validate configuration on client initialization
+
+## Script Path Resolution
+
+**Standard Pattern** for scripts in `scripts/` directory:
+
+```python
+from pathlib import Path
+import sys
+import os
+
+# Add project root to Python path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Change to project root for relative paths (if needed)
+os.chdir(Path(__file__).parent.parent)
+```
+
+**Rules**:
+
+- All scripts in `scripts/` use `parent.parent` to reach project root
+- Use `os.chdir()` when script needs relative file paths
+- Test scripts from both root and subdirectories
+- Document expected working directory in docstrings
+
+## Database Best Practices
+
+### Connection Management
+
+**Always use context managers** to prevent database locks:
+
+```python
+import sqlite3
+from contextlib import contextmanager
+
+@contextmanager
+def get_db_connection(db_path: str):
+    """Context manager for database connections."""
+    conn = sqlite3.connect(db_path, timeout=5.0)
+    conn.execute("PRAGMA busy_timeout = 5000")
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+```
+
+### Lock Prevention
+
+- Close database viewers in VS Code before running scripts
+- Use WAL mode for better concurrency: `PRAGMA journal_mode=WAL`
+- Set busy timeout: `PRAGMA busy_timeout = 5000`
+- Restart VS Code if database remains locked
 
 ## Common Patterns
 
