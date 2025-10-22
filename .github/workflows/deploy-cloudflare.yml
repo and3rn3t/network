@@ -36,9 +36,16 @@ jobs:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
           VITE_WS_BASE_URL: ${{ secrets.VITE_WS_BASE_URL }}
 
+      - name: Create Cloudflare Pages project (if needed)
+        working-directory: ./frontend
+        run: npx wrangler pages project create network --production-branch=main || true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Deploy to Cloudflare Pages
         working-directory: ./frontend
-        run: npx wrangler pages deploy dist --project-name=network --branch=main
+        run: npx wrangler pages deploy dist --project-name=network --branch=main --commit-dirty=true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
