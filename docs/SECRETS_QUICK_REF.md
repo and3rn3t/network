@@ -2,7 +2,7 @@
 
 ## Add These 4 Secrets to GitHub
 
-**Location:** https://github.com/and3rn3t/network/settings/secrets/actions
+**Location:** <https://github.com/and3rn3t/network/settings/secrets/actions>
 
 | Secret Name             | Where to Get It                                                                                         | Example Value              |
 | ----------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------- |

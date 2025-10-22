@@ -48,6 +48,7 @@ wrangler d1 create network-db
 ```
 
 **Output example**:
+
 ```
 ✅ Successfully created DB 'network-db'!
 database_id = "abc123-def456-ghi789"
@@ -77,6 +78,7 @@ wrangler kv:namespace create CACHE
 ```
 
 **Output example**:
+
 ```
 ✅ Successfully created KV namespace
 id = "xyz987xyz987"
@@ -105,6 +107,7 @@ wrangler deploy
 ```
 
 **Output**:
+
 ```
 ✅ Deployed network-api
    https://network-api.YOUR_SUBDOMAIN.workers.dev
@@ -120,6 +123,7 @@ wrangler deploy
 6. Click "Add Custom Domain"
 
 Cloudflare will automatically:
+
 - Create DNS records
 - Issue SSL certificate
 - Route traffic to your worker
@@ -174,11 +178,13 @@ DNS records are created automatically. Wait 5-10 minutes.
 Both frontend and backend auto-deploy on push to `main`:
 
 ### Frontend Workflow
+
 - File: `.github/workflows/deploy-cloudflare.yml`
 - Triggers: Changes to `frontend/**`
 - Deploys to: Cloudflare Pages
 
 ### Backend Workflow
+
 - File: `.github/workflows/deploy-workers.yml`
 - Triggers: Changes to `workers/**`
 - Deploys to: Cloudflare Workers

@@ -48,7 +48,7 @@ wrangler deploy
 ### Frontend Domain (net.andernet.dev)
 
 1. Go to Cloudflare Pages dashboard
-2. Click `network` project  
+2. Click `network` project
 3. Custom domains → Set up a custom domain
 4. Enter: `net.andernet.dev`
 
@@ -78,6 +78,7 @@ curl -X POST https://api.andernet.dev/api/auth/login `
 ## Default Credentials
 
 ⚠️ **CHANGE IMMEDIATELY**
+
 - Username: `admin`
 - Password: `admin123`
 

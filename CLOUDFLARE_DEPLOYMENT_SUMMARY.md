@@ -9,6 +9,7 @@
 **Framework**: Hono (lightweight, fast web framework)
 
 **Features**:
+
 - JWT authentication with bcrypt
 - Full CRUD for alerts, rules, channels
 - Health check endpoints
@@ -18,6 +19,7 @@
 - Cloudflare KV caching
 
 **Files Created** (21 files):
+
 ```
 workers/
 ├── src/
@@ -53,11 +55,13 @@ docs/
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/login` - Login with username/password
 - `POST /api/auth/register` - Register new user
 - `GET /api/auth/me` - Get current user (requires auth)
 
 ### Alerts
+
 - `GET /api/alerts` - List alerts (with filtering)
 - `GET /api/alerts/:id` - Get alert by ID
 - `POST /api/alerts/:id/acknowledge` - Acknowledge alert
@@ -65,6 +69,7 @@ docs/
 - `GET /api/alerts/stats/summary` - Alert statistics
 
 ### Rules
+
 - `GET /api/rules` - List alert rules
 - `GET /api/rules/:id` - Get rule by ID
 - `POST /api/rules` - Create rule
@@ -72,6 +77,7 @@ docs/
 - `DELETE /api/rules/:id` - Delete rule
 
 ### Channels
+
 - `GET /api/channels` - List notification channels
 - `GET /api/channels/:id` - Get channel by ID
 - `POST /api/channels` - Create channel
@@ -80,18 +86,21 @@ docs/
 - `POST /api/channels/:id/test` - Test channel
 
 ### Health
+
 - `GET /health` - Basic health check
 - `GET /health/ready` - Readiness check (includes DB connection)
 
 ## Database Schema
 
 **Tables**:
+
 - `users` - User accounts with bcrypt passwords
 - `alert_rules` - Alert rule definitions
 - `alerts` - Alert instances with status tracking
 - `notification_channels` - Notification channel configs
 
 **Default Admin User**:
+
 - Username: `admin`
 - Password: `admin123` (⚠️ CHANGE IMMEDIATELY)
 
@@ -127,6 +136,7 @@ docs/
 **Two workflows**:
 
 1. **Frontend** (`.github/workflows/deploy-cloudflare.yml`)
+
    - Triggers: Push to `main` with changes to `frontend/**`
    - Deploys to: Cloudflare Pages
    - Domain: `net.andernet.dev`
@@ -156,11 +166,13 @@ wrangler deploy
 ### 2. Add Custom Domains (2 minutes)
 
 **API Domain**:
+
 1. Cloudflare Workers dashboard → `network-api`
 2. Settings → Domains & Routes → Add Custom Domain
 3. Enter: `api.andernet.dev`
 
 **Frontend Domain**:
+
 1. Cloudflare Pages dashboard → `network`
 2. Custom domains → Set up a custom domain
 3. Enter: `net.andernet.dev`
@@ -168,6 +180,7 @@ wrangler deploy
 ### 3. Update Frontend Environment Variables (1 minute)
 
 Cloudflare Pages → `network` → Settings → Environment variables:
+
 - `VITE_API_BASE_URL` = `https://api.andernet.dev`
 - `VITE_WS_BASE_URL` = `wss://api.andernet.dev`
 
@@ -183,6 +196,7 @@ curl https://net.andernet.dev
 ## Technology Stack
 
 ### Frontend
+
 - React 18
 - TypeScript
 - Vite
@@ -191,6 +205,7 @@ curl https://net.andernet.dev
 - Deployed on Cloudflare Pages
 
 ### Backend
+
 - Hono (web framework)
 - TypeScript
 - Cloudflare Workers (edge runtime)
@@ -219,6 +234,7 @@ curl https://net.andernet.dev
 ## Security Notes
 
 ⚠️ **IMPORTANT**:
+
 1. Change default admin password immediately
 2. Set strong JWT_SECRET (use `openssl rand -base64 32`)
 3. Enable 2FA on Cloudflare account
