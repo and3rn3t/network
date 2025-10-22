@@ -1,0 +1,26 @@
+{
+  "name": "network-api",
+  "version": "1.0.0",
+  "description": "UniFi Network API on Cloudflare Workers",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --format=esm",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.6.11",
+    "@hono/zod-validator": "^0.2.2",
+    "zod": "^3.23.8",
+    "jose": "^5.9.3",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241022.0",
+    "typescript": "^5.6.3",
+    "wrangler": "^4.44.0",
+    "esbuild": "^0.24.0",
+    "@types/bcryptjs": "^2.4.6"
+  }
+}

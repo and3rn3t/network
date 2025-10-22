@@ -1,0 +1,34 @@
+name = "network-api"
+main = "src/index.ts"
+compatibility_date = "2025-10-21"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database binding for SQLite
+[[d1_databases]]
+binding = "DB"
+database_name = "network-db"
+database_id = "" # Will be filled after creating D1 database
+
+# KV for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "" # Will be filled after creating KV namespace
+
+# Durable Objects for WebSocket connections
+[[durable_objects.bindings]]
+name = "WEBSOCKET"
+class_name = "WebSocketDurableObject"
+script_name = "network-api"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["WebSocketDurableObject"]
+
+[vars]
+JWT_SECRET = "your-secret-key-change-in-production"
+JWT_EXPIRATION = "7d"
+CORS_ORIGIN = "https://net.andernet.dev"
+
+# For production, use secrets instead:
+# wrangler secret put JWT_SECRET
+# wrangler secret put UNIFI_API_KEY
