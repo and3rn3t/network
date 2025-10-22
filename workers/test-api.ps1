@@ -13,7 +13,8 @@ try {
     Write-Host "   ✅ Health check passed" -ForegroundColor Green
     Write-Host "      Status: $($response.status)" -ForegroundColor Gray
     Write-Host "      Version: $($response.version)" -ForegroundColor Gray
-} catch {
+}
+catch {
     Write-Host "   ❌ Health check failed: $($_.Exception.Message)" -ForegroundColor Red
 }
 
@@ -23,7 +24,8 @@ try {
     $response = Invoke-RestMethod -Uri "$baseUrl/health/ready" -Method Get
     Write-Host "   ✅ Ready check passed" -ForegroundColor Green
     Write-Host "      Database: $($response.database)" -ForegroundColor Gray
-} catch {
+}
+catch {
     Write-Host "   ❌ Ready check failed: $($_.Exception.Message)" -ForegroundColor Red
 }
 
@@ -34,19 +36,20 @@ try {
         username = "admin"
         password = "admin123"
     } | ConvertTo-Json
-    
+
     $response = Invoke-RestMethod -Uri "$baseUrl/api/auth/login" -Method Post `
         -ContentType "application/json" `
         -Body $loginData
-    
+
     Write-Host "   ✅ Login successful" -ForegroundColor Green
     Write-Host "      Token: $($response.access_token.Substring(0, 20))..." -ForegroundColor Gray
     Write-Host "      User: $($response.user.username)" -ForegroundColor Gray
     Write-Host "      Email: $($response.user.email)" -ForegroundColor Gray
-    
+
     # Save token for next test
     $global:token = $response.access_token
-} catch {
+}
+catch {
     Write-Host "   ❌ Login failed: $($_.Exception.Message)" -ForegroundColor Red
 }
 
@@ -57,16 +60,18 @@ if ($global:token) {
         $headers = @{
             Authorization = "Bearer $global:token"
         }
-        
+
         $response = Invoke-RestMethod -Uri "$baseUrl/api/auth/me" -Method Get -Headers $headers
-        
+
         Write-Host "   ✅ Authentication working" -ForegroundColor Green
         Write-Host "      Username: $($response.username)" -ForegroundColor Gray
         Write-Host "      Is Superuser: $($response.is_superuser)" -ForegroundColor Gray
-    } catch {
+    }
+    catch {
         Write-Host "   ❌ Auth test failed: $($_.Exception.Message)" -ForegroundColor Red
     }
-} else {
+}
+else {
     Write-Host "`n[4/4] Authenticated Endpoint..." -ForegroundColor Yellow
     Write-Host "   ⏭️  Skipped (no token)" -ForegroundColor Gray
 }
