@@ -7,12 +7,12 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "network-db"
-database_id = "" # Will be filled after creating D1 database
+database_id = "8daa825c-f40c-4f62-8d88-d2d2877aa35b"
 
 # KV for caching
 [[kv_namespaces]]
 binding = "CACHE"
-id = "" # Will be filled after creating KV namespace
+id = "92150f9584de4309851ea09d1ad1b026"
 
 # Durable Objects for WebSocket connections
 [[durable_objects.bindings]]
@@ -22,7 +22,7 @@ script_name = "network-api"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["WebSocketDurableObject"]
+new_sqlite_classes = ["WebSocketDurableObject"]
 
 [vars]
 JWT_SECRET = "your-secret-key-change-in-production"

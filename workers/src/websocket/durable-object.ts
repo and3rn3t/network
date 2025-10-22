@@ -12,10 +12,10 @@ export class WebSocketDurableObject {
   }
 
   async fetch(request: Request): Promise<Response> {
-    const upgradeHeader = request.headers.get('Upgrade');
-    
-    if (upgradeHeader !== 'websocket') {
-      return new Response('Expected websocket', { status: 400 });
+    const upgradeHeader = request.headers.get("Upgrade");
+
+    if (upgradeHeader !== "websocket") {
+      return new Response("Expected websocket", { status: 400 });
     }
 
     const pair = new WebSocketPair();
@@ -34,30 +34,34 @@ export class WebSocketDurableObject {
     webSocket.accept();
     this.sessions.add(webSocket);
 
-    webSocket.addEventListener('message', (event: MessageEvent) => {
+    webSocket.addEventListener("message", (event: MessageEvent) => {
       // Echo messages back for now
       // In production, handle different message types
-      webSocket.send(JSON.stringify({
-        type: 'echo',
-        data: event.data,
-        timestamp: new Date().toISOString(),
-      }));
+      webSocket.send(
+        JSON.stringify({
+          type: "echo",
+          data: event.data,
+          timestamp: new Date().toISOString(),
+        })
+      );
     });
 
-    webSocket.addEventListener('close', () => {
+    webSocket.addEventListener("close", () => {
       this.sessions.delete(webSocket);
     });
 
-    webSocket.addEventListener('error', () => {
+    webSocket.addEventListener("error", () => {
       this.sessions.delete(webSocket);
     });
 
     // Send welcome message
-    webSocket.send(JSON.stringify({
-      type: 'connected',
-      message: 'Connected to UniFi Network API WebSocket',
-      timestamp: new Date().toISOString(),
-    }));
+    webSocket.send(
+      JSON.stringify({
+        type: "connected",
+        message: "Connected to UniFi Network API WebSocket",
+        timestamp: new Date().toISOString(),
+      })
+    );
   }
 
   // Broadcast message to all connected clients

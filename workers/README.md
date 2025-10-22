@@ -71,15 +71,18 @@ npm run type-check
 ## API Endpoints
 
 ### Health
+
 - `GET /health` - Health check
 - `GET /health/ready` - Readiness check
 
 ### Authentication
+
 - `POST /api/auth/login` - Login
 - `POST /api/auth/register` - Register
 - `GET /api/auth/me` - Get current user
 
 ### Alerts
+
 - `GET /api/alerts` - List alerts
 - `GET /api/alerts/:id` - Get alert
 - `POST /api/alerts/:id/acknowledge` - Acknowledge
@@ -87,6 +90,7 @@ npm run type-check
 - `GET /api/alerts/stats/summary` - Stats
 
 ### Rules
+
 - `GET /api/rules` - List rules
 - `GET /api/rules/:id` - Get rule
 - `POST /api/rules` - Create rule
@@ -94,6 +98,7 @@ npm run type-check
 - `DELETE /api/rules/:id` - Delete rule
 
 ### Channels
+
 - `GET /api/channels` - List channels
 - `GET /api/channels/:id` - Get channel
 - `POST /api/channels` - Create channel
@@ -102,6 +107,7 @@ npm run type-check
 - `POST /api/channels/:id/test` - Test channel
 
 ### WebSocket
+
 - `GET /ws` - WebSocket connection
 
 ## Custom Domain

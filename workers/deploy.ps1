@@ -24,7 +24,8 @@ Write-Host "`n[2/5] Running type check..." -ForegroundColor Yellow
 npm run type-check
 if ($LASTEXITCODE -ne 0) {
     Write-Host "⚠️  Type check failed - continuing anyway" -ForegroundColor Yellow
-} else {
+}
+else {
     Write-Host "✅ Type check passed" -ForegroundColor Green
 }
 
@@ -44,7 +45,8 @@ Write-Host "   Checking D1 database..." -ForegroundColor Gray
 wrangler d1 list | Out-Null
 if ($LASTEXITCODE -eq 0) {
     Write-Host "   ℹ️  D1 databases exist - check wrangler.toml for correct IDs" -ForegroundColor Blue
-} else {
+}
+else {
     Write-Host "   Creating D1 database..." -ForegroundColor Gray
     Write-Host "   Run: wrangler d1 create network-db" -ForegroundColor Yellow
     Write-Host "   Then update wrangler.toml with the database_id" -ForegroundColor Yellow
@@ -54,7 +56,8 @@ Write-Host "   Checking KV namespace..." -ForegroundColor Gray
 wrangler kv:namespace list | Out-Null
 if ($LASTEXITCODE -eq 0) {
     Write-Host "   ℹ️  KV namespaces exist - check wrangler.toml for correct IDs" -ForegroundColor Blue
-} else {
+}
+else {
     Write-Host "   Creating KV namespace..." -ForegroundColor Gray
     Write-Host "   Run: wrangler kv:namespace create CACHE" -ForegroundColor Yellow
     Write-Host "   Then update wrangler.toml with the id" -ForegroundColor Yellow
