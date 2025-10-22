@@ -3,6 +3,3 @@
 name = "unifi-network"
 compatibility_date = "2025-10-21"
 pages_build_output_dir = "./dist"
-
-[build]
-command = "npm run build"
