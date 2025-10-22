@@ -38,7 +38,7 @@ jobs:
 
       - name: Deploy to Cloudflare Pages
         working-directory: ./frontend
-        run: npx wrangler pages deploy dist --project-name=unifi-network --branch=main
+        run: npx wrangler pages deploy dist --project-name=network --branch=main
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

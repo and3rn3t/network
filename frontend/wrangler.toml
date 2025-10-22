@@ -1,5 +1,5 @@
 # Cloudflare Pages configuration for UniFi Network Frontend
 
-name = "unifi-network"
+name = "network"
 compatibility_date = "2025-10-21"
 pages_build_output_dir = "./dist"
