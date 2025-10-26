@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "hono": "^4.6.11",
-    "@hono/zod-validator": "^0.2.2",
+    "@hono/zod-validator": "^0.7.0",
     "zod": "^3.23.8",
     "jose": "^5.9.3",
     "bcryptjs": "^2.4.3"
