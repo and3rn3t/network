@@ -1,7 +1,7 @@
 import { MaterialCard } from "@/components/MaterialCard";
-import type { TimeRange } from "@/components/TimeRangeSelector";
-import { TimeRangeSelector } from "@/components/TimeRangeSelector";
 import { ComparisonChart } from "@/components/charts/ComparisonChart";
+import { useGlobalFilters } from "@/contexts/GlobalFilterContext";
+import { usePageMetadata } from "@/contexts/PageMetadataContext";
 import { useClients } from "@/hooks/useClients";
 import { useClientHistoricalMetrics } from "@/hooks/useHistorical";
 import type { Client } from "@/types/client";
@@ -15,7 +15,6 @@ import {
   Alert,
   Button,
   Col,
-  Divider,
   Empty,
   Row,
   Select,
@@ -23,7 +22,8 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import "./Comparison.css";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -49,17 +49,35 @@ const CLIENT_COLORS = [
 
 export const Comparison = () => {
   const [selectedClients, setSelectedClients] = useState<SelectedClient[]>([]);
-  const [timeRange, setTimeRange] = useState<TimeRange>({
-    hours: 24,
-    label: "Last 24 Hours",
-  });
+  const { timeRange } = useGlobalFilters();
+  const { setMetadata } = usePageMetadata();
+
+  useEffect(() => {
+    setMetadata({
+      title: "Client Performance Comparison",
+      description: "Compare WiFi performance metrics across multiple clients",
+      icon: <SwapOutlined />,
+      showFilters: true,
+      filtersConfig: {
+        showSitePicker: false,
+      },
+    });
+  }, [setMetadata]);
 
   // Fetch clients list
   const { data: clientsResponse, isLoading: clientsLoading } = useClients();
   const clients = clientsResponse?.clients || [];
 
   // Convert hours to days for client historical metrics API
-  const days = Math.ceil(timeRange.hours / 24);
+  const days = useMemo(() => {
+    if (timeRange.start && timeRange.end) {
+      const diffHours = timeRange.end.diff(timeRange.start, "hour", true);
+      if (Number.isFinite(diffHours) && diffHours > 0) {
+        return Math.max(1, Math.ceil(diffHours / 24));
+      }
+    }
+    return Math.max(1, Math.ceil((timeRange.hours ?? 24) / 24));
+  }, [timeRange]);
 
   // Fetch metrics for all selected clients (up to 6)
   // Always call hooks the same number of times
@@ -70,14 +88,10 @@ export const Comparison = () => {
   const metrics5 = useClientHistoricalMetrics(selectedClients[4]?.mac, days);
   const metrics6 = useClientHistoricalMetrics(selectedClients[5]?.mac, days);
 
-  const metricsQueries = [
-    metrics1,
-    metrics2,
-    metrics3,
-    metrics4,
-    metrics5,
-    metrics6,
-  ];
+  const metricsQueries = useMemo(
+    () => [metrics1, metrics2, metrics3, metrics4, metrics5, metrics6],
+    [metrics1, metrics2, metrics3, metrics4, metrics5, metrics6]
+  );
 
   const handleAddClient = (clientMac: string) => {
     const client = clients.find((c: Client) => c.mac === clientMac);
@@ -104,11 +118,7 @@ export const Comparison = () => {
     setSelectedClients(selectedClients.filter((c) => c.mac !== clientMac));
   };
 
-  const handleTimeRangeChange = (range: TimeRange) => {
-    setTimeRange(range);
-  };
-
-  const handleExportComparison = () => {
+  const handleExportComparison = useCallback(() => {
     // Prepare comparison data for export
     const exportData = {
       timestamp: new Date().toISOString(),
@@ -129,7 +139,30 @@ export const Comparison = () => {
     link.download = `client-comparison-${Date.now()}.json`;
     link.click();
     URL.revokeObjectURL(url);
-  };
+  }, [metricsQueries, selectedClients, timeRange.label]);
+
+  useEffect(() => {
+    if (selectedClients.length >= 2) {
+      setMetadata({
+        actions: (
+          <Button
+            type="primary"
+            icon={<DownloadOutlined />}
+            onClick={handleExportComparison}
+            size="large"
+          >
+            Export Comparison
+          </Button>
+        ),
+      });
+    } else {
+      setMetadata({ actions: undefined });
+    }
+
+    return () => {
+      setMetadata({ actions: undefined });
+    };
+  }, [handleExportComparison, selectedClients.length, setMetadata]);
 
   const availableClients = clients.filter(
     (client: Client) => !selectedClients.some((c) => c.mac === client.mac)
@@ -157,54 +190,23 @@ export const Comparison = () => {
     };
   });
 
+  const timeRangeLabel = timeRange.label || "Custom Range";
+
   return (
-    <div>
-      {/* Page Header */}
-      <div
-        className="page-header"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
-        <div>
-          <h1 className="page-header-title">
-            <SwapOutlined style={{ marginRight: 12 }} />
-            Client Performance Comparison
-          </h1>
-          <p className="page-header-description">
-            Compare WiFi performance metrics across multiple clients
-          </p>
-        </div>
-
-        {selectedClients.length >= 2 && (
-          <Button
-            type="primary"
-            icon={<DownloadOutlined />}
-            onClick={handleExportComparison}
-            size="large"
-          >
-            Export Comparison
-          </Button>
-        )}
-      </div>
-
-      <Divider style={{ margin: "24px 0" }} />
-
+    <div className="comparison-page">
       {/* Controls */}
-      <MaterialCard elevation={1} style={{ marginBottom: 24 }}>
+      <MaterialCard elevation={1} className="comparison-control-card">
         <Row gutter={[16, 16]}>
           <Col xs={24} md={16}>
-            <Space direction="vertical" style={{ width: "100%" }}>
-              <Text strong>Add Clients to Compare:</Text>
+            <Space direction="vertical" className="comparison-section">
+              <Text strong>Add Clients to Compare</Text>
               <Select
                 showSearch
                 placeholder="Select a client to add to comparison"
                 optionFilterProp="children"
                 onChange={handleAddClient}
                 loading={clientsLoading}
-                style={{ width: "100%" }}
+                className="comparison-full-width"
                 size="large"
                 value={undefined}
                 disabled={selectedClients.length >= 6}
@@ -215,29 +217,34 @@ export const Comparison = () => {
                   </Option>
                 ))}
               </Select>
-              <Text style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.65)" }}>
+              <Text className="comparison-hint">
                 Select up to 6 clients for comparison
               </Text>
             </Space>
           </Col>
 
           <Col xs={24} md={8}>
-            <Space direction="vertical" style={{ width: "100%" }}>
-              <Text strong>Time Range:</Text>
-              <TimeRangeSelector
-                onChange={handleTimeRangeChange}
-                defaultHours={24}
-                showQuickOptions={true}
-              />
+            <Space direction="vertical" className="comparison-section">
+              <Text strong>Time Range</Text>
+              <Tag
+                icon={<SwapOutlined />}
+                className="comparison-time-range-tag"
+                color="var(--md-sys-color-primary-container)"
+              >
+                {timeRangeLabel}
+              </Tag>
+              <Text type="secondary" className="comparison-hint">
+                Adjust the window using the global filters above.
+              </Text>
             </Space>
           </Col>
         </Row>
 
         {/* Selected Clients */}
         {selectedClients.length > 0 && (
-          <div style={{ marginTop: 16 }}>
-            <Text strong>Selected Clients ({selectedClients.length}):</Text>
-            <div style={{ marginTop: 8 }}>
+          <div className="comparison-selected">
+            <Text strong>Selected Clients ({selectedClients.length})</Text>
+            <div className="comparison-tags">
               <Space wrap>
                 {selectedClients.map((client) => (
                   <Tag
@@ -245,8 +252,8 @@ export const Comparison = () => {
                     color={client.color}
                     closable
                     onClose={() => handleRemoveClient(client.mac)}
-                    icon={<CloseCircleOutlined />}
-                    style={{ padding: "4px 8px", fontSize: 14 }}
+                    closeIcon={<CloseCircleOutlined />}
+                    className="comparison-client-tag"
                   >
                     {client.name}
                   </Tag>
@@ -261,12 +268,12 @@ export const Comparison = () => {
             message={
               <span>
                 <InfoCircleOutlined /> Comparing {selectedClients.length}{" "}
-                clients over {timeRange.label.toLowerCase()}
+                clients over {timeRangeLabel.toLowerCase()}
               </span>
             }
             type="info"
             showIcon={false}
-            style={{ marginTop: 16 }}
+            className="comparison-alert"
           />
         )}
 
@@ -275,7 +282,7 @@ export const Comparison = () => {
             message="Add at least one more client to see comparison charts"
             type="warning"
             showIcon
-            style={{ marginTop: 16 }}
+            className="comparison-alert"
           />
         )}
       </MaterialCard>

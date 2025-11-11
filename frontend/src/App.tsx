@@ -5,6 +5,8 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LoadingFallback } from "@/components/LoadingFallback";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { GlobalFilterProvider } from "@/contexts/GlobalFilterContext";
+import { PageMetadataProvider } from "@/contexts/PageMetadataContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { materialDarkTheme, materialTheme } from "@/theme/material-theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -74,7 +76,11 @@ function App() {
                     path="/"
                     element={
                       <PrivateRoute>
-                        <AppLayout />
+                        <PageMetadataProvider>
+                          <GlobalFilterProvider>
+                            <AppLayout />
+                          </GlobalFilterProvider>
+                        </PageMetadataProvider>
                       </PrivateRoute>
                     }
                   >

@@ -2,8 +2,10 @@
  * Main application layout with navigation - Material Design 3
  */
 
+import { GlobalFilterBar } from "@/components/filters/GlobalFilterBar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePageMetadata } from "@/contexts/PageMetadataContext";
 import { useRealTimeAlerts } from "@/hooks/useRealTime";
 import {
   BarChartOutlined,
@@ -34,6 +36,7 @@ export const AppLayout: React.FC = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const { newAlertCount } = useRealTimeAlerts();
+  const { metadata } = usePageMetadata();
 
   const menuItems = [
     {
@@ -150,13 +153,37 @@ export const AppLayout: React.FC = () => {
       </Sider>
       <Layout>
         <Header className="app-header">
-          <div className="app-header-title">
-            <h1 className="app-header-text">Historical Analysis & Insights</h1>
-            <p className="app-header-subtitle">
-              Deep network analytics and trend analysis
-            </p>
+          <div className="app-header-info">
+            {metadata.breadcrumbs && metadata.breadcrumbs.length > 0 && (
+              <div className="app-header-breadcrumbs">
+                {metadata.breadcrumbs.map((crumb, index) => (
+                  <span key={crumb.path ?? crumb.label}>
+                    {crumb.path ? <Link to={crumb.path}>{crumb.label}</Link> : crumb.label}
+                    {index < metadata.breadcrumbs!.length - 1 && (
+                      <span className="app-header-breadcrumb-separator">/</span>
+                    )}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="app-header-title">
+              {metadata.icon && (
+                <span className="app-header-icon" aria-hidden>
+                  {metadata.icon}
+                </span>
+              )}
+              <div>
+                <h1 className="app-header-text">{metadata.title}</h1>
+                {metadata.description && (
+                  <p className="app-header-subtitle">{metadata.description}</p>
+                )}
+              </div>
+            </div>
           </div>
           <div className="app-header-actions">
+            {metadata.actions && (
+              <div className="app-header-custom-actions">{metadata.actions}</div>
+            )}
             <ConnectionStatus />
             <ThemeToggle variant="button" />
             <Button type="text" icon={<BellOutlined />} size="large">
@@ -180,6 +207,9 @@ export const AppLayout: React.FC = () => {
           </div>
         </Header>
         <Content className="app-content">
+          {metadata.showFilters && (
+            <GlobalFilterBar config={metadata.filtersConfig} />
+          )}
           <Outlet />
         </Content>
         <Footer className="app-footer">

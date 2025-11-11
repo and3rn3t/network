@@ -4,6 +4,8 @@
  */
 
 import { MaterialCard } from "@/components/MaterialCard";
+import { useGlobalFilters } from "@/contexts/GlobalFilterContext";
+import { usePageMetadata } from "@/contexts/PageMetadataContext";
 import { useClients } from "@/hooks/useClients";
 import {
   useClientHistoricalMetrics,
@@ -12,6 +14,7 @@ import {
 } from "@/hooks/useHistorical";
 import type { Client } from "@/types/client";
 import {
+  ClockCircleOutlined,
   DownloadOutlined,
   InfoCircleOutlined,
   LineChartOutlined,
@@ -26,10 +29,11 @@ import {
   Space,
   Statistic,
   Tabs,
+  Tag,
   Typography,
   message,
 } from "antd";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -40,16 +44,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import "./Historical.css";
 
 const { Text, Title } = Typography;
 const { Option } = Select;
-
-// Time range options
-const TIME_RANGES = [
-  { value: 7, label: "Last 7 Days" },
-  { value: 30, label: "Last 30 Days" },
-  { value: 90, label: "Last 90 Days" },
-];
 
 // Custom tooltip component for charts
 interface TooltipProps {
@@ -66,18 +64,11 @@ interface TooltipProps {
 const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
   if (active && payload?.length) {
     return (
-      <div
-        style={{
-          backgroundColor: "var(--md-sys-color-surface-container)",
-          padding: "12px",
-          borderRadius: "8px",
-          border: "1px solid var(--md-sys-color-outline)",
-        }}
-      >
-        <Text strong style={{ display: "block", marginBottom: "8px" }}>
+      <div className="historical-tooltip">
+        <Text strong className="historical-tooltip-title">
           {payload[0].payload.formattedTime}
         </Text>
-        <Text style={{ color: "var(--md-sys-color-primary)" }}>
+        <Text className="historical-tooltip-value">
           {payload[0].value.toFixed(2)} {payload[0].unit || ""}
         </Text>
       </div>
@@ -90,7 +81,33 @@ export const Historical = () => {
   const [selectedClientMac, setSelectedClientMac] = useState<
     string | undefined
   >();
-  const [days, setDays] = useState<number>(7);
+  const { setMetadata } = usePageMetadata();
+  const { timeRange } = useGlobalFilters();
+
+  useEffect(() => {
+    setMetadata({
+      title: "Client Performance History",
+      description:
+        "Analyze signal strength, throughput, and stability trends over time",
+      icon: <LineChartOutlined />,
+      showFilters: true,
+      filtersConfig: {
+        showSitePicker: false,
+      },
+    });
+  }, [setMetadata]);
+
+  const selectedDays = useMemo(() => {
+    if (timeRange.start && timeRange.end) {
+      const diffHours = timeRange.end.diff(timeRange.start, "hour", true);
+      if (Number.isFinite(diffHours) && diffHours > 0) {
+        return Math.max(1, Math.ceil(diffHours / 24));
+      }
+    }
+    return Math.max(1, Math.ceil((timeRange.hours ?? 24) / 24));
+  }, [timeRange]);
+
+  const timeRangeLabel = timeRange.label || "Custom Range";
 
   // Fetch clients list
   const { data: clientsResponse, isLoading: clientsLoading } = useClients();
@@ -106,7 +123,7 @@ export const Historical = () => {
     data: metricsData,
     isLoading: metricsLoading,
     error: metricsError,
-  } = useClientHistoricalMetrics(selectedClientMac, days);
+  } = useClientHistoricalMetrics(selectedClientMac, selectedDays);
 
   // Export mutations
   const exportCSVMutation = useExportClientMetricsCSV();
@@ -147,10 +164,6 @@ export const Historical = () => {
     setSelectedClientMac(mac);
   };
 
-  const handleTimeRangeChange = (value: number) => {
-    setDays(value);
-  };
-
   const handleExportCSV = () => {
     if (!selectedClientMac) {
       message.warning("Please select a client first");
@@ -159,7 +172,7 @@ export const Historical = () => {
 
     exportCSVMutation.mutate({
       clientMac: selectedClientMac,
-      days,
+      days: selectedDays,
     });
   };
 
@@ -171,40 +184,28 @@ export const Historical = () => {
 
     exportJSONMutation.mutate({
       clientMac: selectedClientMac,
-      days,
+      days: selectedDays,
     });
   };
 
   return (
-    <div style={{ padding: "24px" }}>
-      {/* Page Header */}
-      <div style={{ marginBottom: "24px" }}>
-        <Title level={2}>
-          <LineChartOutlined style={{ marginRight: "12px" }} />
-          Client Performance History
-        </Title>
-        <Text type="secondary">
-          Analyze client WiFi performance over time with signal strength,
-          bandwidth, and connection quality metrics
-        </Text>
-      </div>
-
+    <div className="historical-page">
       {/* Info Banner */}
       <Alert
         message="Historical Analysis"
-        description="View long-term client performance trends, analyze WiFi signal patterns, and track bandwidth usage over 7, 30, or 90 days. Perfect for troubleshooting connectivity issues and optimizing placement."
+        description="Use the global time range filter above to view long-term client performance trends, analyze WiFi signal patterns, and track bandwidth usage."
         type="info"
         icon={<InfoCircleOutlined />}
         showIcon
         closable
-        style={{ marginBottom: "24px" }}
+        className="historical-banner"
       />
 
       {/* Controls */}
-      <MaterialCard style={{ marginBottom: "24px" }}>
+      <MaterialCard className="historical-control-card">
         <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
-            <Space direction="vertical" style={{ width: "100%" }}>
+            <Space direction="vertical" className="historical-full-width">
               <Text strong>Select Client Device</Text>
               <Select
                 showSearch
@@ -212,7 +213,7 @@ export const Historical = () => {
                 value={selectedClientMac}
                 onChange={handleClientChange}
                 loading={clientsLoading}
-                style={{ width: "100%" }}
+                className="historical-full-width"
                 size="large"
                 optionFilterProp="children"
               >
@@ -226,26 +227,24 @@ export const Historical = () => {
           </Col>
 
           <Col xs={24} md={12}>
-            <Space direction="vertical" style={{ width: "100%" }}>
+            <Space direction="vertical" className="historical-full-width">
               <Text strong>Time Range</Text>
-              <Select
-                value={days}
-                onChange={handleTimeRangeChange}
-                style={{ width: "100%" }}
-                size="large"
+              <Tag
+                icon={<ClockCircleOutlined />}
+                color="var(--md-sys-color-primary-container)"
+                className="historical-time-range-tag"
               >
-                {TIME_RANGES.map((range) => (
-                  <Option key={range.value} value={range.value}>
-                    {range.label}
-                  </Option>
-                ))}
-              </Select>
+                {timeRangeLabel}
+              </Tag>
+              <Text type="secondary" className="historical-time-range-hint">
+                Adjust the analysis window using the global filters above.
+              </Text>
             </Space>
           </Col>
         </Row>
 
         {selectedClientMac && (
-          <div style={{ marginTop: "16px" }}>
+          <div className="historical-export-actions">
             <Divider />
             <Space>
               <Button
@@ -287,7 +286,7 @@ export const Historical = () => {
       {metricsData && selectedClientMac && !metricsLoading && (
         <>
           {/* Client Info */}
-          <MaterialCard style={{ marginBottom: "24px" }}>
+          <MaterialCard className="historical-client-card">
             <Row gutter={16}>
               <Col span={24}>
                 <Title level={4}>
@@ -312,14 +311,14 @@ export const Historical = () => {
               items={metricsData.metrics.map((metric) => ({
                 key: metric.metric_name,
                 label: (
-                  <span style={{ textTransform: "capitalize" }}>
+                  <span className="historical-metric-title">
                     {metric.metric_name.replaceAll("_", " ")}
                   </span>
                 ),
                 children: (
                   <div>
                     {/* Statistics */}
-                    <Row gutter={16} style={{ marginBottom: "24px" }}>
+                    <Row gutter={16} className="historical-metric-stats">
                       <Col span={4}>
                         <Statistic
                           title="Latest"
@@ -396,10 +395,7 @@ export const Historical = () => {
                       </LineChart>
                     </ResponsiveContainer>
 
-                    <Text
-                      type="secondary"
-                      style={{ marginTop: "16px", display: "block" }}
-                    >
+                    <Text type="secondary" className="historical-data-label">
                       Data points: {metric.statistics.count}
                     </Text>
                   </div>
@@ -413,19 +409,8 @@ export const Historical = () => {
       {/* No Client Selected */}
       {!selectedClientMac && !clientsLoading && (
         <MaterialCard>
-          <div
-            style={{
-              textAlign: "center",
-              padding: "48px 24px",
-            }}
-          >
-            <LineChartOutlined
-              style={{
-                fontSize: "64px",
-                color: "var(--md-sys-color-primary)",
-                marginBottom: "16px",
-              }}
-            />
+          <div className="historical-empty-state">
+            <LineChartOutlined className="historical-empty-icon" />
             <Title level={3}>Select a Client to Begin</Title>
             <Text type="secondary">
               Choose a client device from the dropdown above to view its WiFi

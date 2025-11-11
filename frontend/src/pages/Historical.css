@@ -1,0 +1,74 @@
+.historical-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-lg);
+}
+
+.historical-banner {
+  margin-bottom: var(--md-sys-spacing-lg);
+}
+
+.historical-control-card {
+  margin-bottom: var(--md-sys-spacing-lg);
+}
+
+.historical-full-width {
+  width: 100%;
+}
+
+.historical-time-range-tag {
+  width: fit-content;
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.historical-time-range-hint {
+  font-size: 0.85rem;
+}
+
+.historical-export-actions {
+  margin-top: var(--md-sys-spacing-md);
+}
+
+.historical-client-card {
+  margin-bottom: var(--md-sys-spacing-lg);
+}
+
+.historical-metric-title {
+  text-transform: capitalize;
+}
+
+.historical-metric-stats {
+  margin-bottom: var(--md-sys-spacing-lg);
+}
+
+.historical-data-label {
+  display: block;
+  margin-top: var(--md-sys-spacing-md);
+}
+
+.historical-empty-state {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.historical-empty-icon {
+  font-size: 64px;
+  color: var(--md-sys-color-primary);
+  margin-bottom: var(--md-sys-spacing-md);
+}
+
+.historical-tooltip {
+  background-color: var(--md-sys-color-surface-container);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.historical-tooltip-title {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.historical-tooltip-value {
+  color: var(--md-sys-color-primary);
+}

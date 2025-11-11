@@ -1,0 +1,44 @@
+.comparison-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-lg);
+}
+
+.comparison-control-card {
+  margin-bottom: var(--md-sys-spacing-lg);
+}
+
+.comparison-section {
+  width: 100%;
+}
+
+.comparison-full-width {
+  width: 100%;
+}
+
+.comparison-hint {
+  font-size: 0.85rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.comparison-time-range-tag {
+  width: fit-content;
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.comparison-selected {
+  margin-top: var(--md-sys-spacing-md);
+}
+
+.comparison-tags {
+  margin-top: var(--md-sys-spacing-sm);
+}
+
+.comparison-client-tag {
+  padding: 4px 8px !important;
+  font-size: 0.875rem;
+}
+
+.comparison-alert {
+  margin-top: var(--md-sys-spacing-md);
+}
