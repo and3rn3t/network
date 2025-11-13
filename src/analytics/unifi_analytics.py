@@ -158,10 +158,7 @@ class UniFiAnalyticsEngine:
 
         # Calculate overall health score (weighted average)
         health_score = (
-            cpu_score * 0.3
-            + memory_score * 0.3
-            + uptime_score * 0.2
-            + client_score * 0.2
+            cpu_score * 0.3 + memory_score * 0.3 + uptime_score * 0.2 + client_score * 0.2
         )
 
         # Determine status
@@ -431,9 +428,7 @@ class UniFiAnalyticsEngine:
         y_mean = mean(y_values)
 
         # Calculate slope
-        numerator = sum(
-            (x_values[i] - x_mean) * (y_values[i] - y_mean) for i in range(n)
-        )
+        numerator = sum((x_values[i] - x_mean) * (y_values[i] - y_mean) for i in range(n))
         denominator = sum((x_values[i] - x_mean) ** 2 for i in range(n))
 
         if denominator == 0:
@@ -540,9 +535,7 @@ class UniFiAnalyticsEngine:
             "analysis_period_hours": hours,
             "devices": {
                 "total": len(devices),
-                "avg_health_score": (
-                    mean(device_health_scores) if device_health_scores else None
-                ),
+                "avg_health_score": (mean(device_health_scores) if device_health_scores else None),
                 "unhealthy_count": len(unhealthy_devices),
                 "unhealthy_devices": unhealthy_devices,
             },

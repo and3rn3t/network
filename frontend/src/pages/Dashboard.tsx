@@ -3,6 +3,7 @@
  */
 
 import { MaterialCard } from "@/components/MaterialCard";
+import { LiveMetricsChart } from "@/components/charts/LiveMetricsChart";
 import { useDevices } from "@/hooks/useDevices";
 import {
   useRealTimeDeviceStatus,
@@ -30,7 +31,7 @@ import "./Dashboard.css";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { data: devicesData, isLoading } = useDevices();
+  const { data: devicesData, isLoading, isError } = useDevices();
   const { metrics, status: metricsStatus } = useRealTimeMetrics();
   const { deviceStatuses, status: deviceStatusStatus } =
     useRealTimeDeviceStatus();
@@ -156,12 +157,26 @@ const Dashboard: React.FC = () => {
     deviceStatusStatus === "connected" ||
     healthStatusConnection === "connected";
 
+  // Show error state or continue with empty data
   if (isLoading) {
     return (
-      <div className="dashboard-loading">
-        <Spin size="large" tip="Loading dashboard..." />
+      <div
+        className="dashboard-loading"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
+        <Spin size="large" />
       </div>
     );
+  }
+
+  // If error or no data, show dashboard with empty/mock data
+  if (isError || !devicesData) {
+    console.warn("Dashboard: API error or no data, showing with defaults");
   }
 
   // Determine health color based on status
@@ -495,6 +510,53 @@ const Dashboard: React.FC = () => {
               <Tag color="processing">Auto-collecting every 5 min</Tag>
             </div>
           </MaterialCard>
+        </Col>
+      </Row>
+
+      {/* Live Metrics Charts */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={12}>
+          <LiveMetricsChart
+            metricType="bandwidth"
+            title="Network Bandwidth"
+            unit=" Mbps"
+            maxDataPoints={30}
+            height={280}
+            color="#1976d2"
+          />
+        </Col>
+        <Col xs={24} lg={12}>
+          <LiveMetricsChart
+            metricType="clients"
+            title="Connected Clients"
+            unit=" clients"
+            maxDataPoints={30}
+            height={280}
+            color="#2e7d32"
+          />
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} lg={12}>
+          <LiveMetricsChart
+            metricType="cpu"
+            title="Average CPU Usage"
+            unit="%"
+            maxDataPoints={30}
+            height={280}
+            color="#ed6c02"
+          />
+        </Col>
+        <Col xs={24} lg={12}>
+          <LiveMetricsChart
+            metricType="memory"
+            title="Average Memory Usage"
+            unit="%"
+            maxDataPoints={30}
+            height={280}
+            color="#9c27b0"
+          />
         </Col>
       </Row>
 

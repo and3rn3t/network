@@ -1,0 +1,21 @@
+/* Live Metrics Chart Styles */
+
+.live-metrics-empty {
+  text-align: center;
+  padding: 40px 0;
+  color: #999;
+}
+
+.live-metrics-empty-subtitle {
+  font-size: 12px;
+}
+
+.live-metrics-dashboard {
+  padding: 24px;
+}
+
+.live-metrics-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+}

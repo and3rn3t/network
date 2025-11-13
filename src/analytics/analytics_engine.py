@@ -160,9 +160,7 @@ class AnalyticsEngine:
         y_mean = mean(y_values)
 
         # Calculate slope
-        numerator = sum(
-            (x_values[i] - x_mean) * (y_values[i] - y_mean) for i in range(n)
-        )
+        numerator = sum((x_values[i] - x_mean) * (y_values[i] - y_mean) for i in range(n))
         denominator = sum((x_values[i] - x_mean) ** 2 for i in range(n))
 
         if denominator == 0:

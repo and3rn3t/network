@@ -20,6 +20,7 @@ const Historical = lazy(() => import("@/pages/Historical"));
 const Comparison = lazy(() => import("@/pages/Comparison"));
 const Correlation = lazy(() => import("@/pages/Correlation"));
 const Analytics = lazy(() => import("@/pages/Analytics"));
+const PredictiveAnalytics = lazy(() => import("@/pages/PredictiveAnalytics"));
 const Alerts = lazy(() => import("@/pages/Alerts"));
 const Rules = lazy(() => import("@/pages/Rules"));
 const Channels = lazy(() => import("@/pages/Channels"));
@@ -89,6 +90,7 @@ function App() {
                     <Route path="comparison" element={<Comparison />} />
                     <Route path="correlation" element={<Correlation />} />
                     <Route path="analytics" element={<Analytics />} />
+                    <Route path="predictive" element={<PredictiveAnalytics />} />
                     <Route path="alerts" element={<Alerts />} />
                     <Route path="rules" element={<Rules />} />
                     <Route path="channels" element={<Channels />} />

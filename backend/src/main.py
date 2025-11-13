@@ -1,5 +1,7 @@
 """Main FastAPI application."""
 
+import asyncio
+import logging
 import sys
 from pathlib import Path
 
@@ -30,6 +32,13 @@ from backend.src.middleware.error_handler import add_exception_handlers
 
 # Get settings
 settings = get_settings()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
@@ -83,13 +92,18 @@ async def root():
 
 @app.on_event("startup")
 async def startup_event():
-    """Application startup event."""
-    import logging
+    """Initialize application on startup."""
+    logger.info("Starting UniFi Network Dashboard API")
+    logger.info("API documentation available at: http://localhost:8000/docs")
+    logger.info("WebSocket endpoint available at: ws://localhost:8000/ws")
 
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
-    logger.info("FastAPI application starting up")
-    logger.info(f"WebSocket endpoint available at: ws://localhost:8000/ws")
+    # Import broadcast functions
+    from backend.src.api.websocket import broadcast_health_loop, broadcast_metrics_loop
+
+    # Start background broadcast tasks and keep references
+    app.state.metrics_task = asyncio.create_task(broadcast_metrics_loop())
+    app.state.health_task = asyncio.create_task(broadcast_health_loop())
+    logger.info("Background broadcast tasks started")
 
 
 if __name__ == "__main__":

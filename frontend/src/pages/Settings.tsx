@@ -11,7 +11,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Divider, Tabs, Typography } from "antd";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 const { Text } = Typography;
 
@@ -32,7 +32,7 @@ const AdvancedTab = React.lazy(
 const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState("alert-rules");
 
-  const tabItems = [
+  const tabItems = useMemo(() => [
     {
       key: "alert-rules",
       label: (
@@ -44,9 +44,9 @@ const Settings: React.FC = () => {
       children: (
         <React.Suspense
           fallback={
-            <MaterialCard elevation={1}>
-              <Text>Loading...</Text>
-            </MaterialCard>
+            <div style={{ padding: 24, textAlign: 'center' }}>
+              <Text>Loading Alert Rules...</Text>
+            </div>
           }
         >
           <AlertRulesTab />
@@ -64,9 +64,9 @@ const Settings: React.FC = () => {
       children: (
         <React.Suspense
           fallback={
-            <MaterialCard elevation={1}>
-              <Text>Loading...</Text>
-            </MaterialCard>
+            <div style={{ padding: 24, textAlign: 'center' }}>
+              <Text>Loading Channels...</Text>
+            </div>
           }
         >
           <NotificationChannelsTab />
@@ -84,9 +84,9 @@ const Settings: React.FC = () => {
       children: (
         <React.Suspense
           fallback={
-            <MaterialCard elevation={1}>
-              <Text>Loading...</Text>
-            </MaterialCard>
+            <div style={{ padding: 24, textAlign: 'center' }}>
+              <Text>Loading Preferences...</Text>
+            </div>
           }
         >
           <UserPreferencesTab />
@@ -104,16 +104,16 @@ const Settings: React.FC = () => {
       children: (
         <React.Suspense
           fallback={
-            <MaterialCard elevation={1}>
-              <Text>Loading...</Text>
-            </MaterialCard>
+            <div style={{ padding: 24, textAlign: 'center' }}>
+              <Text>Loading Advanced Settings...</Text>
+            </div>
           }
         >
           <AdvancedTab />
         </React.Suspense>
       ),
     },
-  ];
+  ], []);
 
   return (
     <div>

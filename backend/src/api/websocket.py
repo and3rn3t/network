@@ -7,12 +7,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from backend.src.services.database_service import get_database
 from backend.src.services.websocket_manager import manager
 from src.database.database import Database
 
@@ -225,3 +224,157 @@ async def broadcast_health_update(health_data: dict):
         },
         "health",
     )
+
+
+async def broadcast_metrics_loop():
+    """
+    Background task to continuously broadcast metrics updates.
+
+    Runs every 30 seconds and broadcasts recent metrics to subscribers.
+    """
+    logger.info("Starting metrics broadcast loop")
+
+    while True:
+        try:
+            # Only broadcast if there are active connections
+            if manager.get_connection_count() > 0:
+                from backend.src.services.database_service import get_database
+
+                db = next(get_database())
+
+                # Get recent metrics (last 5 minutes to catch less frequent collections)
+                since = datetime.now() - timedelta(minutes=5)
+                query = """
+                    SELECT
+                        d.id, d.name, m.metric_name, m.metric_value, m.recorded_at
+                    FROM unifi_device_metrics m
+                    JOIN unifi_devices d ON m.device_mac = d.mac
+                    WHERE m.recorded_at >= ?
+                    ORDER BY m.recorded_at DESC
+                    LIMIT 100
+                """
+
+                rows = db.fetch_all(query, (since.isoformat(),))
+
+                if rows:
+                    metrics_data = [
+                        {
+                            "device_id": row["id"],
+                            "device_name": row["name"],
+                            "metric_name": row["metric_name"],
+                            "metric_value": row["metric_value"],
+                            "recorded_at": row["recorded_at"],
+                        }
+                        for row in rows
+                    ]
+
+                    # Broadcast to metrics room
+                    await manager.broadcast_to_room(
+                        {
+                            "type": "metrics_update",
+                            "data": metrics_data,
+                            "count": len(metrics_data),
+                            "timestamp": datetime.now().isoformat(),
+                        },
+                        "metrics",
+                    )
+                    logger.debug(
+                        f"Broadcasted {len(metrics_data)} metrics to subscribers"
+                    )
+
+            # Wait 30 seconds before next broadcast
+            await asyncio.sleep(30)
+
+        except Exception as e:
+            logger.error(f"Error in metrics broadcast loop: {e}")
+            await asyncio.sleep(60)  # Wait longer on error
+
+
+async def broadcast_health_loop():
+    """
+    Background task to broadcast network health updates.
+
+    Runs every 60 seconds and broadcasts health scores to subscribers.
+    """
+    logger.info("Starting health broadcast loop")
+
+    while True:
+        try:
+            # Only broadcast if there are active connections
+            if manager.get_connection_count() > 0:
+                from backend.src.services.database_service import get_database
+
+                db = next(get_database())
+
+                # Get device counts
+                device_query = """
+                    SELECT
+                        COUNT(*) as total,
+                        SUM(CASE WHEN state = 1 THEN 1 ELSE 0 END) as online
+                    FROM unifi_devices
+                """
+                device_row = db.fetch_one(device_query)
+
+                total_devices = device_row["total"] if device_row else 0
+                online_devices = device_row["online"] if device_row else 0
+
+                # Get recent alert count (if alert system is configured)
+                active_alerts = 0
+                try:
+                    since_24h = datetime.now() - timedelta(hours=24)
+                    alert_query = """
+                        SELECT COUNT(*) as alert_count
+                        FROM alert_history
+                        WHERE status = 'triggered'
+                        AND triggered_at >= ?
+                    """
+                    alert_row = db.fetch_one(alert_query, (since_24h.isoformat(),))
+                    active_alerts = alert_row["alert_count"] if alert_row else 0
+                except Exception:
+                    # Alert system not configured, use 0
+                    pass
+
+                # Calculate health score (0-100)
+                health_score = 100
+                if total_devices > 0:
+                    offline_penalty = (
+                        (total_devices - online_devices) / total_devices
+                    ) * 30
+                    health_score -= offline_penalty
+                health_score -= min(active_alerts * 2, 20)
+                health_score = max(0, min(100, health_score))
+
+                # Determine status
+                if health_score >= 90:
+                    health_status = "excellent"
+                elif health_score >= 75:
+                    health_status = "good"
+                elif health_score >= 50:
+                    health_status = "fair"
+                else:
+                    health_status = "poor"
+
+                # Broadcast to health room
+                await manager.broadcast_to_room(
+                    {
+                        "type": "health_update",
+                        "data": {
+                            "health_score": round(health_score, 1),
+                            "health_status": health_status,
+                            "total_devices": total_devices,
+                            "online_devices": online_devices,
+                            "offline_devices": total_devices - online_devices,
+                            "active_alerts": active_alerts,
+                        },
+                        "timestamp": datetime.now().isoformat(),
+                    },
+                    "health",
+                )
+                logger.debug(f"Broadcasted health score: {health_score:.1f}")
+
+            # Wait 60 seconds before next broadcast
+            await asyncio.sleep(60)
+
+        except Exception as e:
+            logger.error(f"Error in health broadcast loop: {e}")
+            await asyncio.sleep(120)  # Wait longer on error
