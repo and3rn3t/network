@@ -14,7 +14,7 @@ python-multipart==0.0.6
 websockets==12.0
 
 # CORS and middleware
-python-dotenv==1.0.0
+python-dotenv==1.2.2
 
 # Testing
 pytest==7.4.3
