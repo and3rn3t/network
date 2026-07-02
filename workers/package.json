@@ -19,8 +19,8 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241022.0",
     "typescript": "^5.6.3",
-    "wrangler": "^4.44.0",
-    "esbuild": "^0.24.0",
+    "wrangler": "^4.106.0",
+    "esbuild": "^0.28.1",
     "@types/bcryptjs": "^2.4.6"
   }
 }
