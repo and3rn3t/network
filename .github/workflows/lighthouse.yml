@@ -1,0 +1,24 @@
+# Lighthouse performance baseline — DISABLED by default.
+#
+# For the simple "audit an already-deployed URL" case, call the shared
+# reusable-lighthouse.yml (see and3rn3t for a working example):
+#
+#   jobs:
+#     lighthouse:
+#       uses: and3rn3t/.github/.github/workflows/reusable-lighthouse.yml@main
+#       with:
+#         url: https://your-deployed-url.example
+#
+# If you need a build step first or custom PR-comment formatting, write your
+# own job instead — see health or homehub for that pattern.
+
+name: Lighthouse
+
+on:
+  workflow_dispatch:
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Enable Lighthouse by calling reusable-lighthouse.yml — see and3rn3t for a working example."
