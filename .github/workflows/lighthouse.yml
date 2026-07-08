@@ -5,7 +5,7 @@
 #
 #   jobs:
 #     lighthouse:
-#       uses: and3rn3t/.github/.github/workflows/reusable-lighthouse.yml@main
+#       uses: and3rn3t/.github/.github/workflows/reusable-lighthouse.yml@v1
 #       with:
 #         url: https://your-deployed-url.example
 #
